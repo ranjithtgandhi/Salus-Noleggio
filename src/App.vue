@@ -1,0 +1,45 @@
+<template>
+  <ion-app>
+    <ion-router-outlet />
+  </ion-app>
+</template>
+
+<script lang="ts">
+import { IonApp, IonRouterOutlet } from '@ionic/vue';
+import { defineComponent } from 'vue';
+/* start - firebase */
+/* // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyB05h30v2O1MZmk4gvgz8ftp3j0Rc6iEcE",
+  authDomain: "salus-7a3dd.firebaseapp.com",
+  projectId: "salus-7a3dd",
+  storageBucket: "salus-7a3dd.appspot.com",
+  messagingSenderId: "171514381807",
+  appId: "1:171514381807:web:660882115c6fdd5d1a221a",
+  measurementId: "G-J7LLKG9QT3"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app); */
+/* end - fire base */
+export default defineComponent({
+  name: 'App',
+  components: {
+    IonApp,
+    IonRouterOutlet
+  }
+});
+</script>
+<style>
+body,html{
+  background: var(--ion-body-bg-white) !important;
+  }
+</style>

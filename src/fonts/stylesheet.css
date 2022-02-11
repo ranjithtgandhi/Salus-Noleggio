@@ -1,0 +1,90 @@
+@font-face {
+    font-family: 'Spartan-extralight';
+    src: url('Spartan-ExtraLight.woff2') format('woff2'),
+        url('Spartan-ExtraLight.woff') format('woff'),
+        url('Spartan-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Spartan-medium';
+    src: url('Spartan-Medium.woff2') format('woff2'),
+        url('Spartan-Medium.woff') format('woff'),
+        url('Spartan-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Spartan-bold';
+    src: url('Spartan-Bold.woff2') format('woff2'),
+        url('Spartan-Bold.woff') format('woff'),
+        url('Spartan-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Spartan-light';
+    src: url('Spartan-Light.woff2') format('woff2'),
+        url('Spartan-Light.woff') format('woff'),
+        url('Spartan-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Spartan-regular';
+    src: url('Spartan-Regular.woff2') format('woff2'),
+        url('Spartan-Regular.woff') format('woff'),
+        url('Spartan-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Spartan-black';
+    src: url('Spartan-Black.woff2') format('woff2'),
+        url('Spartan-Black.woff') format('woff'),
+        url('Spartan-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Spartan-extrabold';
+    src: url('Spartan-ExtraBold.woff2') format('woff2'),
+        url('Spartan-ExtraBold.woff') format('woff'),
+        url('Spartan-ExtraBold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Spartan-thin';
+    src: url('Spartan-Thin.woff2') format('woff2'),
+        url('Spartan-Thin.woff') format('woff'),
+        url('Spartan-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Spartan-semibold';
+    src: url('Spartan-SemiBold.woff2') format('woff2'),
+        url('Spartan-SemiBold.woff') format('woff'),
+        url('Spartan-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+

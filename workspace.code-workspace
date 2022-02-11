@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../ionic-v6-firebase-tabs-auth-main"
+		}
+	],
+	"settings": {}
+}

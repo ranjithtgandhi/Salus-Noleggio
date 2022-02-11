@@ -1,0 +1,46 @@
+PODS:
+  - Capacitor (3.3.3):
+    - CapacitorCordova
+  - CapacitorApp (1.0.7):
+    - Capacitor
+  - CapacitorCordova (3.3.3)
+  - CapacitorHaptics (1.1.3):
+    - Capacitor
+  - CapacitorKeyboard (1.2.0):
+    - Capacitor
+  - CapacitorStatusBar (1.0.6):
+    - Capacitor
+
+DEPENDENCIES:
+  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
+  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
+  - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
+  - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
+
+EXTERNAL SOURCES:
+  Capacitor:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorApp:
+    :path: "../../node_modules/@capacitor/app"
+  CapacitorCordova:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorHaptics:
+    :path: "../../node_modules/@capacitor/haptics"
+  CapacitorKeyboard:
+    :path: "../../node_modules/@capacitor/keyboard"
+  CapacitorStatusBar:
+    :path: "../../node_modules/@capacitor/status-bar"
+
+SPEC CHECKSUMS:
+  Capacitor: 0b3475cfa2f6849a6d83ee14836a592a6ada3b28
+  CapacitorApp: 0a277cb00eec95a0c508f3bb8a2ab8c6ba1c869f
+  CapacitorCordova: ae44f9ca2af48db94caa11420148d8ed14e55217
+  CapacitorHaptics: d8a540ff5a935d9aae50e70800a670e951700592
+  CapacitorKeyboard: ba4b410a01457a292a8c378fc4fa2faeaa9d3dfd
+  CapacitorStatusBar: 867707b03a4f319dfe5a16447ad056528c04dcf7
+
+PODFILE CHECKSUM: 90d47e5c2ebba1a5cc21b01100de8ccc736b5351
+
+COCOAPODS: 1.10.1

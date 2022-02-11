@@ -1,0 +1,7 @@
+{
+  "name": "salus-Noleggio",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
