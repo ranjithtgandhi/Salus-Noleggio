@@ -20,14 +20,14 @@ const authCheck = async (to: any, from: any, next: any) => {
       }else{
         next({ name: "UserHome" });
       }
-     
+
     } else {
       next();
-        /* if(!store.isAdmin){
-          next({ name: "UserHome" });
-        }else{
-          next();
-        }  */
+      /* if(!store.isAdmin){
+        next({ name: "UserHome" });
+      }else{
+        next();
+      }  */
     }
   } else {
     if (to.name === "login-user" || to.name === "login-admin" ) {
@@ -44,7 +44,7 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/login'
   },
   {
-    
+
     path: '/login',
     component: login,
     children: [
@@ -112,12 +112,12 @@ const routes: Array<RouteRecordRaw> = [
         beforeEnter: authCheck,
       },
       /* Admin component */
-       {
+      {
         name: "AdminHome",
         path: 'AdminHome',
         component: () => import('@/views/AdminHome.vue'),
         beforeEnter: authCheck,
-      }, 
+      },
       {
         path: 'AdminUser',
         component: () => import('@/views/AdminUser.vue'),
@@ -138,21 +138,29 @@ const routes: Array<RouteRecordRaw> = [
         ]
       },
       {
-        name: "c",
+        name: "AdminChatUserList",
+        path: 'AdminChatUserList',
+        component: () => import('@/views/AdminChatUserList.vue'),
+        beforeEnter: authCheck,
+      },
+      {
+        name: "AdminProduct",
         path: '/AdminProduct/:id',
         component: () => import('@/views/AdminProduct.vue'),
         beforeEnter: authCheck,
       },
       {
-        path: 'AdminChat',
+        name: "AdminChat",
+        path: 'AdminChat/:id',
         component: () => import('@/views/AdminChat.vue'),
         beforeEnter: authCheck,
+        props:true,
       },
       {
         name: "AddArticle",
         path: '/AddArticle/:id',
         component: () => import('@/views/AddArticle.vue'),
-        
+
       }
       /* {
         path: 'AdminSettings',

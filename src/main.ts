@@ -1,7 +1,7 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from 'vue';
+import App from './App.vue';
 import router from './router';
-
+import state from './store/state';
 import { IonicVue } from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
@@ -29,7 +29,7 @@ import { createPinia } from "pinia";
 import { useAuthStore } from "./store";
 const pina = createPinia();
 
-const app = createApp(App).use(IonicVue).use(pina);
+const app = createApp(App).use(IonicVue).use(pina).use(state);
 
 // get the store
 const store = useAuthStore();
