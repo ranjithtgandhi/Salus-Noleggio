@@ -1,83 +1,52 @@
 <template>
   <ion-page>
     <ion-content :fullscreen="true">
-      <ExploreContainer name="Chat Page" />
+      <ExploreContainer name="Chat Page"/>
       <div class="outerPadding">
-<!-- List of Chat -->
-      <!-- <div class="chatAdminContainer">
-        <ion-card>
-          <ion-row class="ion-align-items-center">
-            <ion-col size="1.5" class="ion-text-center">
-              <div class="redCircle">1</div>
-            </ion-col>
-            <ion-col size="10.5">
-              <ion-card-title class="text-darkblue pb-5">Company 01</ion-card-title>
-              <ion-card-subtitle class="text-lightgrey"
-                >Metal rods of cast iron materials with..</ion-card-subtitle
-              >
-            </ion-col>
-          </ion-row>
-        </ion-card>
-        <ion-card>
-          <ion-row class="ion-align-items-center">
-            <ion-col size="1.5" class="ion-text-center">
-              <div class="redCircle">3</div>
-            </ion-col>
-            <ion-col size="10.5">
-              <ion-card-title class="text-darkblue pb-5">Company 01</ion-card-title>
-              <ion-card-subtitle class="text-lightgrey"
-                >Metal rods of cast iron materials with..</ion-card-subtitle
-              >
-            </ion-col>
-          </ion-row>
-        </ion-card>
-      </div> -->
+        <ion-row v-for="(item,i) in getChats.messages" :key="i">
+          <ion-col size="12">
+            <div class="dateContainer">
+              <div class="chatDate">
+                {{ getDay(new Date(item[0].id)) }}
+              </div>
+            </div>
+          </ion-col>
+          <ion-col>
+            <ion-row v-for="(chat,j) in item" :key="j">
+              <ion-col :offset="chat.createdBy===getChats.id?3:0" size="9">
+                <ion-card :class="chat.createdBy===getChats.id?`white-bg`:`rose-bg`">
+                  <ion-card-subtitle>
+                    {{ chat.message }}
+                    <div style="font-size: 7px; text-align: end">
+                      {{ formatTime(chat.id) }}
+                    </div>
+                  </ion-card-subtitle>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </ion-col>
 
-      <!-- Individual chat -->
-       <ion-row>
-        <ion-col size="9">
-          <ion-card class="rose-bg">
-            <ion-card-subtitle>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-              eget velit nunc. Aliquam tempus elit sit amet erat maximus, eu
-              consequat tortor volutpat.
-            </ion-card-subtitle>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-      <div class="dateContainer">
-        <div class="chatDate">Yesterday</div>
-      </div>
+        </ion-row>
 
-      <ion-row>
-        <ion-col offset="3" size="9">
-          <ion-card class="white-bg">
-            <ion-card-subtitle>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-              eget velit nunc. Aliquam tempus elit sit amet erat maximus, eu
-              consequat tortor volutpat.
-            </ion-card-subtitle>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-      
       </div>
       <!-- text area -->
       <div class="chatTextBox">
         <ion-row class="ion-align-items-center">
           <ion-col size="9.5">
             <ion-input
-              class="ion-padding-start"
-              name="name"
-              type="text"
-              placeholder="Type here..."
+                class="ion-padding-start"
+                name="name"
+                type="text"
+                placeholder="Type here..."
+                v-model="message"
+                ref="message"
             ></ion-input>
           </ion-col>
           <ion-col size="1">
             <ion-icon :icon="attachOutline" class="attachIcon"></ion-icon>
           </ion-col>
           <ion-col size="1.5">
-            <ion-icon :icon="arrowForward" class="arrowIcon"></ion-icon>
+            <ion-icon :icon="arrowForward" class="arrowIcon" @click="sendMessage"></ion-icon>
           </ion-col>
         </ion-row>
       </div>
@@ -85,24 +54,108 @@
   </ion-page>
 </template>
 
-<script lang="ts">
-import { IonPage, IonContent } from "@ionic/vue";
+<script>
+import {IonPage, IonContent} from "@ionic/vue";
 import ExploreContainer from "@/components/ExploreContainer.vue";
-import { attachOutline, arrowForward } from "ionicons/icons";
-
+import {attachOutline, arrowForward} from "ionicons/icons";
+import {useAuthStore} from "@/store";
+import {ref} from "vue";
+import state from "@/store/state"
+import {mapGetters} from "vuex";
+import {doc, onSnapshot} from "firebase/firestore";
+import {auth, db} from "@/store/firebase";
 export default {
   name: "Chat",
-  components: { ExploreContainer, IonContent, IonPage },
+  components: {ExploreContainer, IonContent, IonPage},
   setup() {
+    const authStore = useAuthStore();
+    const message = ref("");
     return {
       attachOutline,
       arrowForward,
+      authStore,
+      message,
     };
   },
+  computed: {
+    ...mapGetters({
+      getUserChats: 'getUserChats'
+    }),
+    getChats() {
+      return this.getUserChats
+    }
+  },
+  beforeMount() {
+    this.getMessages();
+  },
+  methods: {
+    async getMessages() {
+      const user = auth.currentUser;
+      onSnapshot(doc(db, "messages", user.uid), (doc) => {
+        const chat = doc.data().chat.map((item) => {
+          return {
+            id: item.id,
+            message: item.message,
+            createdBy: item.createdBy,
+            date: this.formatDate(new Date(item.id))
+          }
+        })
+        const data = {
+          createdAt: doc.data().createdAt,
+          id: doc.data().id,
+          messages: this.groupBy(chat, 'date')
+        }
+        state.commit("userChats", data)
+      })
+    },
+    async sendMessage() {
+      await this.authStore.sentMessage(this.message.value);
+    },
+    groupBy(objectArray, property) {
+      return objectArray.reduce((acc, obj) => {
+        const key = obj[property];
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(obj);
+        return acc;
+      }, {});
+    },
+    formatDate(item) {
+      let dt = new Date(item);
+      const day = dt.getDate();
+      const year = dt.getFullYear();
+      dt = dt.toString();
+      const strTime = dt.slice(4, 7) + " " + day + " " + year + " ";
+      return strTime;
+    },
+    formatTime(item) {
+      const date = new Date(item);
+      let hours = Number(date.getHours());
+      let minutes = Number(date.getMinutes());
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      return hours + ":" + minutes + " " + ampm;
+    },
+    getDay(someDate) {
+      const today = new Date()
+      const yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
+      const result = someDate.getDate() === today.getDate() &&
+          someDate.getMonth() === today.getMonth() &&
+          someDate.getFullYear() === today.getFullYear()
+      const result2 = someDate.getDate() === yesterday.getDate() &&
+          someDate.getMonth() === yesterday.getMonth() &&
+          someDate.getFullYear() === yesterday.getFullYear()
+      if (result) return 'Today'
+      else if (result2) return 'Yesterday'
+      else return this.formatDate(someDate)
+    }
+  }
 };
 </script>
 <style>
-
 .font-weight {
   font-weight: 700;
 }
@@ -110,7 +163,6 @@ export default {
   background: #f9eaee;
   margin: 0px 0px 18px 0px;
 }
-
 .white-bg {
   background: var(--ion-color-secondary-contrast, #ffffff);
 }
@@ -156,7 +208,6 @@ ion-input {
   color: var(--ion-color-primary);
   font-size: 24px;
 }
-
 .arrowIcon {
   color: #ffffff;
   /* --color: var(--ion-color-light-contrast,#ffffff); */

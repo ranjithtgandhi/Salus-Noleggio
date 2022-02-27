@@ -1,4 +1,4 @@
-import {loadingController } from "@ionic/vue";
+import {loadingController,toastController } from "@ionic/vue";
 
 export const presentLoading = async (isLoading: any) => {
     console.log('loading')
@@ -17,4 +17,15 @@ export const presentLoading = async (isLoading: any) => {
         });
         
      
-  };
+};
+
+
+export const toastAlert = async(msg: string) =>{
+  const toast = await toastController
+    .create({
+      message: msg,
+      duration: 2000,
+      color:"dark"
+    })
+  return toast.present();
+};

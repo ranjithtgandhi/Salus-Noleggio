@@ -12,6 +12,10 @@ import {
   fbSetApproveToUser,
   fbGetUserDetail,
   fbCreateProduct,
+  fbSetNotification,
+  fbForgotPassword,
+  fbSetUserStatus,
+  fbSentMessage, fbGetMessage, fbAdminSentMessage,
   //fbCollectionListener,
 } from "./firebase";
 
@@ -28,6 +32,7 @@ interface State {
   user: fbUser | null;
   profile: any;
   error: any;
+  message: any;
   inActiveCompUsers: null;
   activeCompUsers: null;
   userProductDetails: any;
@@ -40,6 +45,7 @@ export const useAuthStore = defineStore("authStore", {
     user: null,
     profile: null,
     error: null,
+    message: null,
     inActiveCompUsers: null,
     activeCompUsers: null,
     userProductDetails: null,
@@ -55,12 +61,14 @@ export const useAuthStore = defineStore("authStore", {
      * and if logging in, loading the associated profile info
      * @returns
      */
-    initializeAuthListener() {
+    initializeAuthListener() { 
       return new Promise((resolve) => {
         fbAuthStateListener(async (user: any) => {
-          this.user = user ? user : null;
+          this.user = user ? user : null;// debugger;
           const profile = (await fbGetUserProfile()) as any;
-          this.profile = profile;
+          this.profile =  profile ? profile : null;
+          setStore('user', this.user);
+          setStore('profile', this.profile);
           resolve(true);
         });
         /* fbCollectionListener('users',(user: any) => {
@@ -114,6 +122,22 @@ export const useAuthStore = defineStore("authStore", {
         this.error="Username or Password does not match";
         return false;
       }
+    },
+    async forgotPassword(email: string) {
+      if (!email) {
+        this.error = "Please enter the email address.";
+        return;
+      }
+      try {
+        const response = await fbForgotPassword(email);
+        debugger;
+        this.message= "Your password has been reset successfully";
+        return true;
+      } catch (e: any) {
+        this.error = 'Please type in a valid email address.';
+        return false;
+      }
+
     },
     /**
      *
@@ -196,12 +220,12 @@ export const useAuthStore = defineStore("authStore", {
         });
       }); */
     },
-    async createProduct(userId: string,
+    async createProduct(
       name: string,
       description: string,
-      quantity: number) {
-        if(name && description && quantity){
-          const res = await fbCreateProduct(userId,name,description,quantity);
+      ) {//userId: string,quantity: number
+        if(name && description ){//&& quantity
+          const res = await fbCreateProduct(name,description);//userId,quantity
           if(res){
               this.error=null;
               return true;
@@ -222,7 +246,53 @@ export const useAuthStore = defineStore("authStore", {
             this.userProductDetails =res;
             return true;
         }
-    }
+    },
+    async setUserStatus(status: boolean,userId: any){
+      const res = await fbSetUserStatus(status,userId);
+      const profile =  await fbGetUserProfile();
+      if(res && profile){
+        this.profile=profile;
+        return true;
+      }
+    },
+    async setNotification(note: boolean){
+      const res = await fbSetNotification(note);
+      const profile =  await fbGetUserProfile();
+      if(res && profile){
+        this.profile=profile;
+        return true;
+      }
+    },
+    async sentMessage(message: string) {
+      if (message) {
+          const res = await fbSentMessage(message);
+          if (res) {
+              this.error = null;
+              return true;
+          } else {
+              this.error = "Please enter valid message";
+              return false;
+          }
+      } else {
+          this.error = "Please enter a message";
+          return false;
+      }
+  },
+  async adminSentMessage(message: string, uid: string) {
+      if (message) {
+          const res = await fbAdminSentMessage(message, uid);
+          if (res) {
+              this.error = null;
+              return true;
+          } else {
+              this.error = "Please enter valid message";
+              return false;
+          }
+      } else {
+          this.error = "Please enter a message";
+          return false;
+      }
+  },
     
 
   },

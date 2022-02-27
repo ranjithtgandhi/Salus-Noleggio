@@ -16,7 +16,7 @@ import { Storage } from '@capacitor/storage';
 
   export async function getStore(key: string): Promise<{ value: any }> {
       const data = await Storage.get({ key }) as any;
-      return JSON.parse(data.value);
+      return (data.value!='null' || data.value!="undefined") ? JSON.parse(data.value): null;
   }
 
 

@@ -68,7 +68,6 @@ import { IonPage,IonInput, IonButton } from "@ionic/vue";
 import { useAuthStore } from "@/store";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import { presentLoading } from "../service/loading";
 import { mailOpenOutline, lockClosedOutline, eyeOutline } from "ionicons/icons";
 import $ from "jquery";
 
@@ -77,7 +76,7 @@ export default defineComponent({
   layout: "AdminLogin",
   name: "AdminLogin",
   setup() {
-    const myBody = document.getElementsByTagName('body')[0];
+     const loader = document.getElementById("loaderContainer");
     const store = useAuthStore();
     const { logInUser } = store;
     const router = useRouter();
@@ -85,17 +84,14 @@ export default defineComponent({
     const password = ref("");
 
     const doLogin = async function(){
-        presentLoading(true);
-      console.log(myBody);
-      console.log($);
+      loader.style.display='block';
+      //console.log($);
       const res = await logInUser(email.value, password.value,'admin');
       if(res && store.isAdmin){
-        router.replace('/tabs/AdminHome');
-         presentLoading(false);
-      }else{
-        presentLoading(false);
+        router.push('/tabs/AdminHome');
+        loader.style.display='none';
+        return false;
       }
-     
     };
     return {
       email,

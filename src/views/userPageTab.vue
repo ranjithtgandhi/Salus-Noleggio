@@ -107,12 +107,12 @@ export default defineComponent({
   data() {
     return {
       search: "",
-      array: [],
+      userlist: [],
     };
   },
   computed: {
     filteredList() {
-      return this.array.filter((user) => {
+      return this.userlist.filter((user) => {
         return user.company.toLowerCase().includes(this.search.toLowerCase());
       });
     },
@@ -120,8 +120,8 @@ export default defineComponent({
   async updated(){
     const authStore =  useAuthStore();
     await authStore.getAllActiveComUsers();
-    this.array = authStore.activeCompUsers;
-    console.log("This is the array data", this.array);
+    this.userlist = authStore.activeCompUsers;
+    console.log("This is the array data", this.userlist);
   },
   methods: {
  

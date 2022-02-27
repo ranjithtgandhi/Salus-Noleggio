@@ -13,7 +13,7 @@
 
             <ion-tab-button tab="approvalPageTab"  @click="selUserTab('Approval')"  data-title="approval" href="approvalPageTab">
               <ion-label class="d-flex"
-                >Approval &nbsp;<span class="redCircle"> {{authStore.inActiveCompUsers?authStore.inActiveCompUsers.length:0}}</span></ion-label
+                >Approval &nbsp;<span class="redCircleApproval redCircle"> {{authStore.inActiveCompUsers?authStore.inActiveCompUsers.length:0}}</span></ion-label
               >
             </ion-tab-button>
           </ion-tab-bar>
@@ -76,14 +76,14 @@ export default defineComponent({
   text-align: center;
   font-family: "Spartan-semibold";
   font-size: 14px;
-  padding: 0px 10px !important;
+  padding: 5px 10px !important;
 }
 .userApprovalTab ion-tab-button{
 color:#fff;
 }
-.activeTab {
+.activeTabUserApproval {
   background: #fff;
-  color: var(--ion-color-primary);
+  color: var(--ion-color-primary) !important;
   padding: 10px 5px;
   border-radius: 5px;
   font-family: "Spartan-semibold";

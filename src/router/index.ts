@@ -92,13 +92,21 @@ const routes: Array<RouteRecordRaw> = [
         beforeEnter: authCheck,
       },
       {
+        name: 'UserDocument',
         path: 'UserDocument',
         component: () => import('@/views/Document.vue'),
         beforeEnter: authCheck,
       },
       {
+        name: 'UserNewRequest',
         path: 'UserNewRequest',
         component: () => import('@/views/New-request.vue'),
+        beforeEnter: authCheck,
+      },
+      {
+        name: 'UserProductList',
+        path: '/UserProductList',
+        component: () => import('@/views/UserProductList.vue'),
         beforeEnter: authCheck,
       },
       {
@@ -138,20 +146,38 @@ const routes: Array<RouteRecordRaw> = [
         ]
       },
       {
-        name: "c",
+        name: "AdminChatUserList",
+        path: 'AdminChatUserList',
+        component: () => import('@/views/AdminChatUserList.vue'),
+        beforeEnter: authCheck,
+      },
+      {
+        name: "AdminProduct",
         path: '/AdminProduct/:id',
         component: () => import('@/views/AdminProduct.vue'),
         beforeEnter: authCheck,
       },
       {
-        path: 'AdminChat',
+        name: "AdminProductList",
+        path: 'AdminProductList',
+        component: () => import('@/views/AdminProductList.vue'),
+        beforeEnter: authCheck,
+      },
+      {
+        name: "AdminProAssignToUser",
+        path: '/AdminProAssignToUser/:id',
+        component: () => import('@/views/AdminProAssignToUser.vue'),
+        beforeEnter: authCheck,
+      },
+      {
+        path: 'AdminChat/:id',
         component: () => import('@/views/AdminChat.vue'),
         beforeEnter: authCheck,
       },
       {
-        name: "AddArticle",
-        path: '/AddArticle/:id',
-        component: () => import('@/views/AddArticle.vue'),
+        name: "AdminAddArticle",
+        path: '/AdminAddArticle',
+        component: () => import('@/views/AdminAddArticle.vue'),
         
       }
       /* {

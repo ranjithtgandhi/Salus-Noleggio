@@ -2,9 +2,10 @@
   <ion-page>
     <ion-content :fullscreen="true">
       <ExploreContainer name="New request page" />
+      <div class="title text-lightred ion-padding ion-text-center">Add Product</div>
       <div class="outerPadding">
      
-        <div class="title text-lightred ion-padding ion-text-center">Add Article</div>
+        
            <div class="ion-padding error-msg" v-if="authStore.error">{{ authStore.error }}</div>
         <div class="inputfieldContainer">
           <div class="text-grey">Product Name</div>
@@ -30,16 +31,16 @@
             required
           ></textarea>
         </div>
-        <div class="inputfieldContainer">
+        <!-- <div class="inputfieldContainer">
           <div class="text-grey">Quantity</div>
           <input class="ion-padding-horizontal" v-model="quantity"
                     id="quantity"
                     type="number"
                     placeholder="Quantity"
                     required />
-        </div>
+        </div> -->
         <div class="requestBtn" style="margin-top:15px">
-        <div class="ion-padding makeRequestBtn ion-text-center"   @click="createProduct" >Submit article</div>
+        <div class="ion-padding makeRequestBtn ion-text-center"   @click="doCreateProduct" >Submit</div>
         </div>
       </div>
 
@@ -54,10 +55,10 @@ import ExploreContainer from "@/components/ExploreContainer.vue";
 import { IonPage, IonContent} from "@ionic/vue";
 import { useAuthStore } from "@/store";
 import { defineComponent, ref } from "vue";
-import { useRouter,useRoute } from "vue-router";
+import { useRouter } from "vue-router";//,useRoute
 //import {fbCreateProduct} from "../store/firebase.ts";
 export default defineComponent({
-  name: "AddArticle",
+  name: "AdminAddArticle",
   components: {
     ExploreContainer,
     IonContent,
@@ -65,36 +66,36 @@ export default defineComponent({
     
   },
   setup() {
-    const route = useRoute();
+    //const route = useRoute();
     const authStore = useAuthStore();
-    const userId = route.params.id;
+    //const userId = route.params.id;
     const router = useRouter();
     const productName = ref("");
     const description = ref("");
-    const quantity = ref("");
-    console.log(route.params.id); 
+    //const quantity = ref("");
+    //console.log(route.params.id); 
     
-    const createProduct = async() => {
-      const response =  await authStore.createProduct(userId,productName.value,description.value,Number(quantity.value));
+    const doCreateProduct = async() => {
+      const response =  await authStore.createProduct(productName.value,description.value);//userId,,Number(quantity.value)
         if(response){
-          router.replace("/AdminProduct/"+userId);
+          router.replace("/tabs/AdminProductList");//+userId
         }
     };
     return {
       productName,
       description,
-      quantity,
-      createProduct,
+      doCreateProduct,
       authStore,
+      //quantity,
     };
   },
   methods: {
-    acceptUser(uid){
+    /* acceptUser(uid){
       const authStore = useAuthStore();
       this.uid = uid
       console.log(uid);
       authStore.setInActiveComUser(uid);
-    }
+    } */
   },
 });
 </script>

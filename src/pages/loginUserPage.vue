@@ -7,7 +7,7 @@
             <div>
               <h3>Login</h3>
             </div>
-        <div class="ion-padding error-msg" v-if="store.error">{{ store.error }}</div>
+            <div class="ion-padding error-msg" v-if="store.error">{{ store.error }}</div>
             <div padding>
               <div class="custom-padding-vertical">
                 <div class="dflex-border">
@@ -55,7 +55,6 @@
               <!--  <ion-button class="common-btn" size="large" @click="openToast" expand="block"
                 >openToast</ion-button
               > -->
-              
             </div>
             <div class="account">Don’t have an account?</div>
             <div class="lightred-text">
@@ -71,11 +70,16 @@
 </template>
 
 <script>
-import { IonPage, IonInput, IonButton, loadingController,toastController } from "@ionic/vue";
+import {
+  IonPage,
+  IonInput,
+  IonButton,
+  loadingController,
+  toastController,
+} from "@ionic/vue";
 import { useAuthStore } from "@/store";
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import { presentLoading } from "../service/loading";
 import { mailOpenOutline, lockClosedOutline, eyeOutline } from "ionicons/icons";
 
 export default defineComponent({
@@ -86,22 +90,23 @@ export default defineComponent({
     const store = useAuthStore();
     const { logInUser } = store;
     const router = useRouter();
-   
+    const loader = document.getElementById("loaderContainer");
     const email = ref("");
     const password = ref("");
     const doLogin = async () => {
-       presentLoading(true);
+       loader.style.display='block';
       console.log(email.value);
       console.log(password.value);
-      const res = await logInUser(email.value, password.value,'user');
-      if(res && !store.isAdmin){
-        router.replace("/tabs/UserHome");
-        presentLoading(false);
-      }else{
-        presentLoading(false);
+      const res = await logInUser(email.value, password.value, "user");
+      if (res && !store.isAdmin) {
+        router.push("/tabs/UserHome");
+         loader.style.display='none';
+        return false;
+      } else {
+        loader.style.display='none';
       }
     };
-    
+
     return {
       email,
       password,
@@ -114,14 +119,13 @@ export default defineComponent({
   },
   methods: {
     async openToast() {
-      const toast = await toastController
-        .create({
-          message: 'Your settings have been saved.',
-          duration: 2000,
-          color:"dark"
-        })
+      const toast = await toastController.create({
+        message: "Your settings have been saved.",
+        duration: 2000,
+        color: "dark",
+      });
       return toast.present();
     },
-  }
+  },
 });
 </script>

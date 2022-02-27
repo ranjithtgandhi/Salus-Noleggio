@@ -45,12 +45,12 @@
           <ion-label>User</ion-label>
         </ion-tab-button>
 
-        <!-- <ion-tab-button tab="AdminProduct" href="/tabs/AdminProduct">
+        <ion-tab-button tab="AdminProductList" href="/tabs/AdminProductList">
           <ion-icon :icon="addCircleSharp" />
           <ion-label>Product</ion-label>
-        </ion-tab-button> -->
+        </ion-tab-button>
 
-        <ion-tab-button tab="AdminChat" href="/tabs/AdminChat">
+        <ion-tab-button tab="AdminChatUserList" href="/tabs/AdminChatUserList"><!-- AdminChat -->
           <ion-icon :icon="logoWechat" />
           <ion-label>Chat</ion-label>
         </ion-tab-button>
@@ -204,7 +204,7 @@ ion-card {
   box-shadow: 0px 0px 2px 2px #eeeeee;
   background: #fff;
   padding: 12px 12px;
-  margin: 18px 0px;
+  margin: 18px 5px;
 }
 .text-grey {
   color: var(--ion-color-medium);
