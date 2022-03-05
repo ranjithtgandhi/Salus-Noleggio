@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content :fullscreen="true">
       <ExploreContainer name="Product List" />
-   <div class="title text-lightred ion-padding ion-text-center">Products</div>
+   <div class="title text-lightred custom-ion-padding ion-text-center">Products</div>
       <div class="productListContainer ion-padding">
      
        <!--  <ion-row class="ion-align-items-center ion-border-bottom py-5">
@@ -55,7 +55,7 @@
           <ion-row class="ion-align-items-center ion-border-bottom py-5">
             <ion-col size="9">
               <ion-card-title class="text-darkblue pb-5">
-              No Records Found!
+              No Results Found!
               </ion-card-title>
             </ion-col>
           </ion-row>
@@ -85,7 +85,7 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useRouter, useRoute } from "vue-router";
-import { defineComponent, onUpdated } from "vue";
+import { defineComponent } from "vue";
 import { fbGetProductList, fbDeleteAdminItem } from "../store/firebase";
 //import { useAuthStore } from "@/store"
 export default defineComponent({
@@ -143,7 +143,10 @@ export default defineComponent({
     console.log(this.productList)
   }, */
   async beforeUpdate() {
+    const loader = document.getElementById("loaderContainer");
+    loader.style.display='block';
     this.productList = await fbGetProductList();
+    loader.style.display='none';
     console.log(this.productList);
   },
   /*   async mounted(){

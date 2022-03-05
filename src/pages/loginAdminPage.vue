@@ -24,6 +24,29 @@
                 </div>
               </div>
               <div class="custom-padding-vertical">
+
+              <!--New code with hide&show password-->
+            <div class="dflex-border">
+              <ion-icon :icon="lockClosedOutline" class="commonStyleIcon"></ion-icon>
+              <!--<input v-if="showPassword" class="ion-padding-horizontal inputOverwrite" type="text" v-model="password" placeholder="Password"/>
+              <input v-else type="password" id="password" class="inputOverwrite" placeholder="Password" v-model="password" required />-->
+              <ion-input
+                    class="ion-padding-horizontal"
+                    v-model="password"
+                    id="passwordAdmin"
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    required
+                  ></ion-input>
+              
+              <div @click="eyefunctionAdmin">
+                <span class="icon">
+                  <i class="fas eyeIconHideShow" :class="{ 'fa-eye-slash': showPassword, 'fa-eye': !showPassword }"></i>
+                </span>
+              </div>
+            </div>
+<!--Backup code
                 <div class="dflex-border">
                   <ion-icon :icon="lockClosedOutline" class="commonStyleIcon"></ion-icon>
                   <ion-input
@@ -35,7 +58,7 @@
                     required
                   ></ion-input>
                   <ion-icon :icon="eyeOutline" class="commonStyleIcon"></ion-icon>
-                </div>
+                </div>-->
               </div>
               <ion-row class="choice">
                 <ion-col size-sm="6" class="remember">
@@ -89,9 +112,8 @@ export default defineComponent({
       const res = await logInUser(email.value, password.value,'admin');
       if(res && store.isAdmin){
         router.push('/tabs/AdminHome');
-        loader.style.display='none';
-        return false;
       }
+      loader.style.display='none';
     };
     return {
       email,
@@ -103,5 +125,25 @@ export default defineComponent({
       eyeOutline,
     };
   },
+  beforeUpdate() {
+   document.getElementById("email").value='';
+   document.getElementById("passwordAdmin").value='';
+  },
+  methods: {
+    eyefunctionAdmin() {
+      this.showPassword = !this.showPassword;
+      const x = document.getElementById("passwordAdmin");
+      if (x.type === "password") {
+        x.type = "text";
+      } else {
+        x.type = "password";
+      }
+    }
+  },
+  data() {
+    return {
+      showPassword: false
+    };
+  }
 });
 </script>

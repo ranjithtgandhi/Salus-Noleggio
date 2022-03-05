@@ -3,5 +3,8 @@
   "integrations": {
     "capacitor": {}
   },
-  "type": "vue"
+  "type": "vue",
+  "proxies": [{
+    "proxyUrl": "https://firebasestorage.googleapis.com"
+  }]
 }

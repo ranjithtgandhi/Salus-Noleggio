@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content :fullscreen="true">
       <ExploreContainer name="New request page" />
-      <div class="title text-lightred ion-padding ion-text-center">
+      <div class="title text-lightred custom-ion-padding ion-text-center">
         {{ userDetail ? userDetail.company : "" }}
       </div>
       <div class="productContainer ion-padding">
@@ -44,23 +44,21 @@
               <ion-col
                 size="1.5"
                 class="ion-text-center"
-                @click="deleteItemFromUser(userId,item)"
+                @click="deleteItemFromUser(userId, item)"
               >
                 <ion-icon class="delete" :icon="removeCircleOutline"></ion-icon>
               </ion-col>
             </ion-row>
           </span>
         </span>
-      </div>
-
-      <div class="requstContainer ion-padding">
-       
-        
-         <div class="deliveryContainer ion-padding-bottom ion-margin-bottom">
+        <div class="deliveryContainer ion-padding-top ion-margin-top">
           <div class="ion-padding deliveryDate ion-text-center" @click="addProTouser">
             Add Article
           </div>
         </div>
+      </div>
+
+      <div class="requstContainer ion-padding" style="margin: 0 14px">
         <div class="deliveryContainer ion-padding-bottom">
           <div class="ion-padding deliveryDate ion-text-center custom-d-flex">
             Order &nbsp;<span class="yellowCircle">03</span>
@@ -75,13 +73,13 @@
           </div>
         </div>
         <div class="deliveryContainer ion-padding-bottom">
-          <div class="ion-padding deliveryDate ion-text-center custom-d-flex">
-            <ion-icon :icon="documentTextSharp"></ion-icon>&nbsp;<input
+          <div class="ion-padding deliveryDate ion-text-center custom-d-flex"   @click="addNewDocs">
+            <ion-icon :icon="documentTextSharp"></ion-icon>&nbsp;<!-- <input
               type="file"
               id="docFile"
               name="filename"
               @change="fileUpload($event)"
-            /><!-- Attachment -->
+            /> -->Attachment
           </div>
         </div>
         <div class="statusBar">
@@ -91,10 +89,10 @@
                 >Customer status {{ userDetail ? userDetail.active : false }}</ion-label
               ></ion-col
             >
-            <ion-col size="2"
-              ><ion-toggle
-                checked="userDetail.active"
-                @ionChange="doUserStatus(userDetail ? userDetail.active : false)"
+            <ion-col size="2"  @click="doUserStatus(userDetail.active)">
+            <ion-toggle
+                value="userDetail.active"
+                v-bind:checked="userDetail?userDetail.active?userDetail.active:false:false"
               ></ion-toggle
             ></ion-col>
           </ion-row>
@@ -124,7 +122,7 @@ import {
   //fbGetProductList,
   fbProductFileUpload,
   //fbAddItemToUser,
-  fbDeleteItemFromUser
+  fbDeleteItemFromUser,
 } from "../store/firebase";
 import { toastAlert } from "../service/common";
 import { useAuthStore } from "@/store";
@@ -138,12 +136,14 @@ export default defineComponent({
   },
   data() {
     return {
-      userDetail: { items: [] },
+      loader:document.getElementById("loaderContainer"),
+      userDetail: { items: [],active:false },
       search: "",
       productList: { items: [] },
     };
   },
   setup() {
+    const loader=document.getElementById("loaderContainer");
     const route = useRoute();
     const userId = route.params.id;
     const router = useRouter();
@@ -171,20 +171,27 @@ export default defineComponent({
       document.getElementById("docFile").value = "";
     };
     const doUserStatus = async (status) => {
-      const updateStatus = !status;
-      await store.setUserStatus(updateStatus, userId);
-      if (updateStatus === false) {
-        router.push("/tabs/AdminUser/userPageTab");
+      if(status!=''){
+          loader.style.display='block';
+          const updateStatus = !status;
+          await store.setUserStatus(updateStatus, userId);
+          if (updateStatus === false) {
+            router.push("/tabs/AdminUser/userPageTab");
+          }
+          loader.style.display='none';
       }
     };
     /* const addItemToUser = async (item) => {
       await fbAddItemToUser(userId, item);
     }; */
-    
+
     const addProTouser = async () => {
       router.push("/AdminProAssignToUser/" + userId);
     };
-    
+    const addNewDocs = async () => { 
+      router.push("/AdminAddDocument/" + userId);
+    };
+
     return {
       removeCircle,
       documentTextSharp,
@@ -197,11 +204,12 @@ export default defineComponent({
       trashOutline,
       fileUpload,
       doUserStatus,
-      addProTouser
+      addProTouser,
+      addNewDocs
     };
   },
   computed: {
-/*     filteredList() {
+    /*     filteredList() {
       let difference = [];
       if (this.userDetail.items !== undefined) {
         difference = this.productList.items.filter((a) => {
@@ -219,31 +227,37 @@ export default defineComponent({
     }, */
   },
   async beforeMount() {
+    this.loader.style.display='block';
     const route = useRoute();
     const userId = route.params.id;
     this.userDetail = await fbGetUserDetail(userId);
+    this.loader.style.display='none';
     //this.productList = await fbGetProductList();
   },
   async beforeUpdate() {
+    this.loader.style.display='block';
     const route = useRoute();
     const userId = route.params.id;
-  //  this.userId = userId;
+    //  this.userId = userId;
     this.userDetail = await fbGetUserDetail(userId);
+    this.loader.style.display='none';
     //this.productList = await fbGetProductList();
     //console.log(this.productList);
   },
   methods: {
-    async deleteItemFromUser(uid,item){
-      const response = await fbDeleteItemFromUser(uid,item);
-      if (response) {
-            toastAlert(`${item.name} Product successfully updated`);
-            this.userDetail = await fbGetUserDetail(uid,item);
-        } else {
-            toastAlert(`${item.name} Product updated filed`);
-        }
+    async deleteItemFromUser(uid, item) {
+      this.loader.style.display='block';
+      const response = await fbDeleteItemFromUser(uid, item);
       
-    }
-
+      if (response) {
+        toastAlert(`${item.name} Product successfully updated`);
+        this.userDetail = await fbGetUserDetail(uid, item);
+      } else {
+        toastAlert(`${item.name} Product updated filed`);
+      }
+      this.loader.style.display='none';
+      
+    },
   },
   /*   async mounted(){
       const route = useRoute();

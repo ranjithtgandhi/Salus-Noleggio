@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content :fullscreen="true">
       <ExploreContainer name="New request page" />
-      <div class="title text-lightred ion-padding ion-text-center">Add Product</div>
+      <div class="title text-lightred custom-ion-padding ion-text-center">Add Product</div>
       <div class="outerPadding">
      
         
@@ -69,6 +69,7 @@ export default defineComponent({
     //const route = useRoute();
     const authStore = useAuthStore();
     //const userId = route.params.id;
+    const loader = document.getElementById("loaderContainer");
     const router = useRouter();
     const productName = ref("");
     const description = ref("");
@@ -76,10 +77,12 @@ export default defineComponent({
     //console.log(route.params.id); 
     
     const doCreateProduct = async() => {
+      loader.style.display='block';
       const response =  await authStore.createProduct(productName.value,description.value);//userId,,Number(quantity.value)
         if(response){
           router.replace("/tabs/AdminProductList");//+userId
         }
+        loader.style.display='none';
     };
     return {
       productName,

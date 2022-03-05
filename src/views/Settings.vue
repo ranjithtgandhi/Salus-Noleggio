@@ -26,7 +26,8 @@
             <!-- {{store.profile.notification}} -->
             <div><!--  $event.target.value --> <!--  v-if=" store.profile.notification? checked='true' : checked='false' " -->
               <ion-toggle  
-            checked="store.profile.notification"
+              value="store.profile.notification"
+              v-bind:checked="(store.profile)?store.profile.notification:false"
              @ionChange="doNotification(store.profile.notification)" ></ion-toggle>
             </div>
           </li>
@@ -46,7 +47,7 @@
 <script>
 import { useAuthStore } from "@/store";
 import { IonPage, IonContent, IonToggle} from "@ionic/vue";
-import { defineComponent,ref } from "vue";
+import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import ExploreContainer from "@/components/ExploreContainer.vue";
 import {
@@ -60,18 +61,23 @@ export default defineComponent({
   name: "Setting",
   components: { ExploreContainer, IonContent, IonPage, IonToggle },
   setup() {
+    const loader = document.getElementById("loaderContainer");
     const store = useAuthStore();
     const router = useRouter();
     /* onMounted(async () => {
       await store.initializeAuthListener();
     }) */
     const doLogout = async () => {
+      loader.style.display='block';
       await store.logoutUser();
       router.replace("/login/loginUserPage");
+      loader.style.display='none';
     };   
    
     const doNotification = async (val) => {
-      const res = await store.setNotification(!val);
+      loader.style.display='block';
+       await store.setNotification(!val);
+       loader.style.display='none';
     };
     
     return {

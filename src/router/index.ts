@@ -158,6 +158,12 @@ const routes: Array<RouteRecordRaw> = [
         beforeEnter: authCheck,
       },
       {
+        name: 'AdminAddDocument',
+        path: '/AdminAddDocument/:id',
+        component: () => import('@/views/AdminAddDocument.vue'),
+        beforeEnter: authCheck,
+      },
+      {
         name: "AdminProductList",
         path: 'AdminProductList',
         component: () => import('@/views/AdminProductList.vue'),

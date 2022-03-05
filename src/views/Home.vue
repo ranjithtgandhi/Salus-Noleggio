@@ -4,46 +4,72 @@
       <ExploreContainer name="Home page" />
 
       <div class="outerPadding">
-        <div v-for="(item, i) in userRequestItems" v-bind:key="item.id">
-          <ion-card :key="i">
-           <ion-row>
-              <ion-col size="12">
-                <div class="text-lightgrey">Delivery Date: {{getDate(item.deliveryDate)}}</div>
-              </ion-col>
-            </ion-row>
-            <!--  v-bind:class="[(i>0) ? 'custom-border-top': '']" -->
-            <span v-for="(product, j) in item.products" v-bind:key="product.id">
-              
-              <ion-row v-bind:class="[j > 0 ? 'custom-border-top' : '']">
-                <ion-col size="8.5">
-                  <ion-card-title class="text-lightred">{{
-                    product.name
-                  }}</ion-card-title>
-
-                  <ion-card-subtitle class="text-lightgrey">{{
-                    product.description
-                  }}</ion-card-subtitle>
-                </ion-col>
-                <ion-col size="2" offset="1.5" class="ion-text-center custom-border">
-                  <ion-card-title class="text-lightred">{{ product.qty }}</ion-card-title>
-                  <ion-card-subtitle class="text-lightgrey">Qty</ion-card-subtitle>
-                </ion-col>
-              </ion-row>
-            </span>
+        <div v-if="userRequestItems.length">
+          <div v-for="(item, a) in userRequestItems" v-bind:key="a">
             <ion-row>
               <ion-col size="12">
-                <div class="text-homedarkblue">To: Admin</div>
+                <div class="text-lightgrey" style="float:right"> {{ item[0] }}</div>
               </ion-col>
             </ion-row>
-            <ion-row class="custom-border-top ion-align-items-center">
-              <ion-col size="9">
-                <div class="requesttext-lightgrey">Request</div>
-              </ion-col>
-              <ion-col size="3" class="ion-text-center">
-                <div class="text-yellow">{{ item.statusMessage }}</div>
-              </ion-col>
-            </ion-row>
-          </ion-card>
+            <span v-for="(pro, i) in item[1]" v-bind:key="i">
+              <ion-card :key="i">
+                <span v-for="(product, j) in pro.products" v-bind:key="product.id">
+                  <ion-row v-bind:class="[j > 0 ? 'custom-border-top' : '']">
+                    <ion-col size="8.5">
+                      <ion-card-title class="text-lightred">{{
+                        product.name
+                      }}</ion-card-title>
+
+                      <ion-card-subtitle class="text-lightgrey">{{
+                        product.description
+                      }}</ion-card-subtitle>
+                    </ion-col>
+                    <ion-col size="2" offset="1.5" class="ion-text-center custom-border">
+                      <ion-card-title class="text-lightred">{{
+                        product.qty
+                      }}</ion-card-title>
+                      <ion-card-subtitle class="text-lightgrey">Qty</ion-card-subtitle>
+                    </ion-col>
+                  </ion-row>
+                  
+                </span>
+                <ion-row>
+                <ion-col size="12">
+                  <div class="text-homedarkblue">To: Admin</div>
+                </ion-col>
+              </ion-row>
+              <ion-row class="custom-border-top ion-align-items-center">
+                <ion-col size="9">
+                  <div class="requesttext-lightgrey">Request</div>
+                </ion-col>
+                <ion-col size="3" class="ion-text-center">
+                  <div
+                    v-bind:class="[
+                      pro.statusMessage != 'pending'
+                        ? 'text-green ion-text-capitalize'
+                        : 'text-yellow ion-text-capitalize',
+                    ]"
+                    class=""
+                  >
+                    {{ pro.statusMessage }}
+                  </div>
+                </ion-col>
+              </ion-row>
+              </ion-card>
+              <!-- <span v-for="(product, j) in item.products" v-bind:key="product.id">
+              {{product.name}} 
+              </span> -->
+            </span>
+          </div>
+        </div>
+        <div v-if="!userRequestItems.length">
+          <ion-row class="ion-align-items-center py-5">
+            <ion-col size="9">
+              <ion-card-title class="text-darkblue pb-5">
+                No Results Found!
+              </ion-card-title>
+            </ion-col>
+          </ion-row>
         </div>
         <!--    <ion-card>
           <ion-row>
@@ -309,7 +335,7 @@ import { fbGetUserRequestedProducts } from "../store/firebase";
 import { IonPage, IonContent, IonCard } from "@ionic/vue"; //,IonItem,IonSelect,IonSelectOption
 import { useAuthStore } from "@/store";
 import { defineComponent } from "vue";
-import moment from 'moment'
+import moment from "moment";
 
 import ExploreContainer from "@/components/ExploreContainer.vue";
 export default defineComponent({
@@ -334,17 +360,46 @@ export default defineComponent({
     };
   },
   async beforeUpdate() {
+    const loader = document.getElementById("loaderContainer");
+    loader.style.display = "block";
     const authStore = useAuthStore();
     this.userRequestData = await fbGetUserRequestedProducts(authStore.user.uid);
     if (this.userRequestData) {
-      this.userRequestItems = this.userRequestData.items;
+      const items = this.userRequestData.items;
+      debugger;
+      items.sort(function (a, b) {
+        return new Date(b.deliveryDate) - new Date(a.deliveryDate);
+      });
+      this.userRequestItems = items;
+      const proObj = {};
+      for (const item of items) {
+        const deliveryDate = this.getDate(item.deliveryDate);
+        if (!proObj[deliveryDate]) {
+          proObj[deliveryDate] = [];
+        }
+        proObj[deliveryDate].push(item);
+        //if (typeof proObj[pos] === 'undefined'!proObj[pos]) {pos++}
+      }
+      this.userRequestItems = Object.entries(proObj);
+      console.log(this.userRequestItems);
+      //this.userRequestItems = items;
+      /* for (const [pro,i] of Object.entries(proObj)) {
+        console.log(pro)
+        console.log(i)
+      }
+      
+      console.log(proObj); */
     }
+    loader.style.display = "none";
   },
-  methods:{
-    getDate : function (date) {
-        return moment(date).format('DD MMM YYYY');
-    }
-  }
+  methods: {
+    getDate: function (date) {
+      return moment(date).format("DD MMM YYYY");
+    },
+    getYYYYMMDD: function (date) {
+      return moment(date).format("YYYY-MM-DD");
+    },
+  },
 });
 </script>
 <style>

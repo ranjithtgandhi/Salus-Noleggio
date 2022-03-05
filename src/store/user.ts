@@ -15,7 +15,7 @@ import {
   fbSetNotification,
   fbForgotPassword,
   fbSetUserStatus,
-  fbSentMessage, fbGetMessage, fbAdminSentMessage,
+  fbSentMessage, fbAdminSentMessage,
   //fbCollectionListener,
 } from "./firebase";
 
@@ -129,8 +129,7 @@ export const useAuthStore = defineStore("authStore", {
         return;
       }
       try {
-        const response = await fbForgotPassword(email);
-        debugger;
+        await fbForgotPassword(email);
         this.message= "Your password has been reset successfully";
         return true;
       } catch (e: any) {
@@ -164,12 +163,19 @@ export const useAuthStore = defineStore("authStore", {
      */
     async createAccount(email: string, password: string, company: string) {
       try {
-        debugger;
-        const { user, profile } = await fbCreateAccount(email, password, company);
-        this.user = user ? user : null;
-        this.profile = profile ? profile : null;
-        this.error = null;
-        return true;
+        //debugger;
+        const res = await fbCreateAccount(email, password, company);
+        /* this.user = user ? user : null;
+        this.profile = profile ? profile : null; */
+        if(res){
+          this.error = null;
+          this.user = null;
+          return true;
+        }else{
+          this.error = 'something went wrong...';
+          return false;
+        }
+
       } catch (e: any) {
         this.user = null;
         this.error = e;

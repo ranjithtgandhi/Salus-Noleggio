@@ -10,7 +10,7 @@
             <div class="text-grey" style="padding: 0 10px 10px 10px; font-size: 10px">
               Delivery date
             </div>
-            <div class="ion-padding deliveryDate">
+            <div class="ion-padding deliveryDate" style="padding:5px">
             <ion-datetime  :min="currentDate" max="2099-12-31" placeholder="Please select date" displayFormat="DD-MMM-YYYY"  name="`myDate`" v-model="myDate" ref="myDate" ></ion-datetime>
             </div>
           </div>
@@ -20,45 +20,51 @@
             </div> -->
             
             <div v-if="userPreReqData.length!==0">
-              <ion-accordion-group
-                v-for="(product, i) in userPreReqData"
-                v-bind:key="product.id"
-              >
-                <ion-accordion value="colors" :toggle-icon="arrowDownCircle" :key="i">
-                <div class="ion-border">
-                  <div slot="header">
+            <div v-for="(product, i) in userPreReqData"
+                v-bind:key="product.id">
+              <accordion-component @show="log" :title="product.name"><!--{{ product.name }}-->
+                <ion-accordion value="colors" :icon="arrowDownCircle" :key="i">
+                <div>
+                  <!--<div slot="header">
                     <div class="plywood-invoice ion-border-bottom">
-                      {{ product.name }} <span style="float:right"  @click="userRemoveProForNewReq(product)"> 
+                      {{ product.name }} <span style="float:right"> 
+                        <ion-icon class="delete" :icon="caretDownOutline"></ion-icon></span>
+                        <span style="float:right"  @click="userRemoveProForNewReq(product)"> 
                         <ion-icon class="delete" :icon="trashOutline"></ion-icon></span>
                     </div>
-                  </div>
+                  </div>-->
                   
                   <ion-list slot="content">
-                    <p class="doc-subtitle text-grey">
+                    <p class="doc-subtitle text-grey ion-border-top pt-10">
                       {{ product.description }}
                     </p>
                     <ion-row class="ion-align-items-center" style="width: 100%">
                       <ion-col size="3">
                         <div class="quantity-text">Quantity:</div>
                       </ion-col>
-                      <ion-col size="4">
+                      <ion-col size="3">
                       <div class="ion-padding price">
                         <div><input type="number" :name="`qty[${i}]`" :ref="`qty[${i}]`"  style="width:100%;background:#f5f9ff;color:#ABAEAD;border:0"></div>
                         </div>
                       </ion-col>
                       
-                      <ion-col size="5" class="ion-text-right">
+                      <ion-col size="4" class="ion-text-right">
                       <div class="value-limit">Max.qty:{{product.qty}}</div>
+                      </ion-col>
+                      <ion-col size="2">
+                      <span style="float:right"  @click="userRemoveProForNewReq(product)"> 
+                        <ion-icon class="delete" :icon="trashOutline"></ion-icon></span>
                       </ion-col>
                     </ion-row>
                   </ion-list>
                   </div>
                 </ion-accordion>
-              </ion-accordion-group>
+              </accordion-component>
+              </div>
             </div>
             <span v-if="userPreReqData.length === 0">
           <ion-row class="ion-align-items-center ion-border-bottom py-5">
-            <ion-col size="9">
+            <ion-col size="12" class="ion-text-center">
               <ion-card-title class="text-darkblue pb-5">
               No Records Found!
               </ion-card-title>
@@ -70,7 +76,7 @@
             <ion-row class="text-grey ion-align-items-center" @click="addMoreGoods">
               <ion-col size="10" class="ion-no-padding">Add more goods</ion-col>
               <ion-col size="2" class="ion-text-center ion-no-padding"
-                ><ion-icon :icon="addCircleOutline"></ion-icon></ion-col>
+                ><ion-icon :icon="addCircleOutline" style="font-size:30px"></ion-icon></ion-col>
             </ion-row>
           </div>
         </div>
@@ -93,26 +99,27 @@ import {
   fgUserProRequestToAdmin,
   //fbUserAddProForNewReq,
 } from "../store/firebase";
+import { useAuthStore } from "@/store"
 /* User module */
-import { IonPage, IonContent,IonDatetime, IonAccordion, IonAccordionGroup } from "@ionic/vue";
+import { IonPage, IonContent,IonDatetime } from "@ionic/vue";
 import { ref } from "vue";
-import { arrowDownCircle, trashOutline,removeCircleOutline, addCircleOutline } from "ionicons/icons";
+import { arrowDownCircle, trashOutline,removeCircleOutline, addCircleOutline, caretDownOutline } from "ionicons/icons";
+import '../components/accordion.js';
 export default {
   name: "NewRequest",
   components: {
     ExploreContainer,
     IonContent,
     IonPage,
-    IonAccordion,
-    IonDatetime,
-    IonAccordionGroup,
+    IonDatetime
   },
   data() {
     const d=new Date();
     const todayDate=d.getDate()+'-'+d.toString().substr(4,3)+'-'+d.getFullYear();
     return {
       userPreReqData: [],
-      myDate:todayDate
+      myDate:todayDate,
+      loader:document.getElementById("loaderContainer"),
     };
   },
   setup() {
@@ -120,8 +127,10 @@ export default {
     const accordionGroup = ref();
     const date = new Date();
     let month = '' +(date.getMonth()+1)
+    let cdate = '' +date.getDate()
     if (month.length < 2) month = '0' + month;
-    const currentDate=`${date.getFullYear()}-${month}-${date.getDate()}`;
+    if (cdate.length < 2) cdate = '0' + cdate;
+    const currentDate=`${date.getFullYear()}-${month}-${cdate}`; debugger
     const logAccordionValue = () => {
       if (accordionGroup.value) {
         console.log(accordionGroup.value.$el.value);
@@ -138,13 +147,13 @@ export default {
     return {
       addMoreGoods,
       arrowDownCircle,
-      accordionGroup,
       closeAccordion,
       trashOutline,
       removeCircleOutline,
       logAccordionValue,
       addCircleOutline,
       currentDate,
+      caretDownOutline
     };
   },
   async beforeUpdate() {
@@ -152,6 +161,8 @@ export default {
   },
    methods: {
     async userRemoveProForNewReq(item) {
+      
+      this.loader.style.display='block';
       this.userPreReqData = await getStore('userPreReqData') || [];
       console.log(this.userPreReqData)
       if(this.userPreReqData.length){
@@ -161,10 +172,14 @@ export default {
             setStore('userPreReqData',this.userPreReqData);
             toastAlert(`${item.name} Product updated successfully`);
         }
+        this.loader.style.display='none';
       }
       
     },
     async userMakeRequest(){
+      
+      this.loader.style.display='block';
+       const {profile}= useAuthStore();
       const userPreReqData=this.userPreReqData;
       const deliveryDate = new Date(this.myDate).getTime();
       const proItems=[];
@@ -172,6 +187,7 @@ export default {
         const maxQty=Number(product.qty);
         const cQty=Number(this.$refs['qty['+key+']'][0].value);
         if(cQty <=0 || cQty > maxQty){
+          this.loader.style.display='none';
           toastAlert(`Please verify your Qty`);
           return false;
         }
@@ -180,7 +196,8 @@ export default {
         proItems.push(product);
         //removeStore
       }
-      const res = await fgUserProRequestToAdmin(proItems,deliveryDate);
+      const res = await fgUserProRequestToAdmin(proItems,deliveryDate,profile);
+      this.loader.style.display='none';
         if(res){
           this.userPreReqData=[];
           await removeStore('userPreReqData');
@@ -216,7 +233,7 @@ export default {
 .price {
     font-size: 12px;
     color: rgb(171 174 188 / 100%);
-    padding: 10px 5px;
+    padding: 5px 5px;
     display: flex;
     align-items: center;
     width: 100%;

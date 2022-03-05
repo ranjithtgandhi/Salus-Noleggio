@@ -24,7 +24,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { setStore, getStore } from "./store";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 //,removeStore,clearStore
 //import { async } from "@firebase/util";
 
@@ -88,7 +88,7 @@ export const fbSetNotification = async (
   }
 
 };
-export const fbSetUserStatus = async (status: boolean, userId: any ) => {
+export const fbSetUserStatus = async (status: boolean, userId: any) => {
 
   //const user = auth.currentUser;
   if (userId) {
@@ -162,24 +162,20 @@ export const fbSetApproveToUser = async (uid: string) => {
 export const fbCreateAccount = async (
   email: string,
   password: string,
-  company: string,
+  company: string
 ) => {
   const response = await createUserWithEmailAndPassword(auth, email, password);
   console.log(response); //debugger;
   if (response) {
     await fbSetUserProfile({ company });
-    const profile = await fbGetUserProfile();
-    //setStore('user',response.user)
-    //setStore('profile',profile)
-    return {
+    //const profile = await fbGetUserProfile();
+    /* return {
       user: response.user,
       profile,
-    };
+    }; */
+    return true;
   } else {
-    return {
-      user: null,
-      profile: null,
-    };
+    return false
   }
 };
 
@@ -238,10 +234,10 @@ export const queryObjectCollection = async ({
   collectionName,
 }: {
   collectionName: string;
-}) => { 
+}) => {
   const querySnapshot = await getDocs(collection(db, collectionName));
   const results: any[] = [];
-  if(querySnapshot){
+  if (querySnapshot) {
     querySnapshot.forEach((doc) => {
       results.push({
         id: doc.id,
@@ -249,10 +245,10 @@ export const queryObjectCollection = async ({
       });
     });
     return results;
-  }else{
+  } else {
     return false;
   }
-  
+
 };
 
 /**
@@ -336,6 +332,18 @@ export const fbCreateProduct = async (
   const user = auth.currentUser;
   if (user) {
     const productRef = doc(db, "items", user.uid);
+    const docSnap = await getDoc(productRef);
+    if (!docSnap.exists()) {
+      await setDoc(productRef,{
+        items: arrayUnion({
+          name: name,
+          description: description,
+          createdBy: user.uid,
+          id: new Date().getTime(),
+        })
+      },{ merge: true })
+      return true;
+    }
     await updateDoc(productRef, {
       items: arrayUnion({
         name: name,
@@ -365,7 +373,7 @@ export const fbGetUserRequestedProducts = async (userId?: string) => {
     }
   }
 };
-export const fgUserProRequestToAdmin = async (obj: any,date: any ) => {
+export const fgUserProRequestToAdmin = async (obj: any, date: any,profile: any) => {
   const user = auth.currentUser
   if (user) {
     const users = doc(db, "requests", user.uid);
@@ -378,11 +386,13 @@ export const fgUserProRequestToAdmin = async (obj: any,date: any ) => {
           items: arrayUnion({
             deliveryDate: date,
             createdAt: d.getTime(),
-            updatedAt:d.getTime(),
-            status:0,
-            statusMessage:'pending',
-            id:d.getTime(),
-            products:obj
+            updatedAt: d.getTime(),
+            status: 0,
+            statusMessage: 'pending',
+            id: d.getTime(),
+            userId: user.uid,
+            company:profile.company, 
+            products: obj
           })
         },
         { merge: true }
@@ -390,34 +400,36 @@ export const fgUserProRequestToAdmin = async (obj: any,date: any ) => {
       return true;
     }
     await updateDoc(users, {
-      items:arrayUnion({
+      items: arrayUnion({
         deliveryDate: date,
         createdAt: d.getTime(),
-        updatedAt:d.getTime(),
-        status:0,
-        statusMessage:'pending',
-        id:d.getTime(),
-        products:obj
+        updatedAt: d.getTime(),
+        status: 0,
+        userId: user.uid,
+        company:profile.company, 
+        statusMessage: 'pending',
+        id: d.getTime(),
+        products: obj
       })
     });
     return true;
-    
+
   }
 };
-export const fbAdminUpdateUserReqPro = async (userId: any,proObj: any) => {
+export const fbAdminUpdateUserReqPro = async (userId: any, proObj: any) => {
   if (userId) {
     const users = doc(db, "requests", userId);
-    const d = new Date();
-    const docSnap = await getDoc(users);
+    //const d = new Date();
+    await getDoc(users);
     await updateDoc(users, {
-      items:deleteField(),//https://firebase.google.com/docs/firestore/manage-data/delete-data
+      items: deleteField(),//https://firebase.google.com/docs/firestore/manage-data/delete-data
     });
     await updateDoc(users, {
-      items:proObj
+      items: proObj
     });
     //posts.filter(post => post.id !== deleteId);
     return true;
-    
+
   }
 };
 
@@ -486,23 +498,43 @@ export const fbGetProductList = async () => {
  * @param itemObj
  * @returns
  */
- export const fbUserAddProForNewReq = async (obj: string | any) => {
+export const fbUserAddProForNewReq = async (obj: string | any) => {
   const user = auth.currentUser;
-  if(user){
+  if (user) {
     const users = doc(db, "users", user.uid);
+    const docSnap = await getDoc(users);
+    if (!docSnap.exists()) {
+      await setDoc(users,{
+        items: arrayUnion(...obj)
+      },{ merge: true })
+      return true;
+    }
     await updateDoc(users, {
       items: arrayUnion(...obj)
     });
     return true;
   }
-  
+
 };
- 
- export const fbAddItemToUser = async (
-  userId: string,itemObj: string | any,quantity: number | any
+
+export const fbAddItemToUser = async (
+  userId: string, itemObj: string | any, quantity: number | any
 ) => {
   const productRef = doc(db, "users", userId);
-  if(productRef){
+  if (productRef) {
+    const docSnap = await getDoc(productRef);
+    if (!docSnap.exists()) {
+      await setDoc(productRef,{
+        items: arrayUnion({
+          name: itemObj.name,
+          description: itemObj.description,
+          qty: quantity,
+          proId: itemObj.id,
+          id: new Date().getTime()
+        })
+      },{ merge: true });
+      return true;
+    }
     await updateDoc(productRef, {
       items: arrayUnion({
         name: itemObj.name,
@@ -515,7 +547,7 @@ export const fbGetProductList = async () => {
     return true;
   }
   return false;
-  
+
 };
 
 export const fbDeleteItemFromUser = async (
@@ -543,21 +575,113 @@ export const fbDeleteAdminItem = async (
  * @param file
  */
 export const fbProductFileUpload = async (
-  file: any
+  file: any,
+  userId: any
 ) => {
   console.log(file)
   const filename = file.name;
   const extension = filename.split('.').pop();
   const storage = getStorage();
-  const storageRef = ref(storage, `${new Date().getTime()}.${extension}`);
+  const storageRef = ref(storage, `Docs/${userId}/${new Date().getTime()}.${extension}`);
   // 'file' comes from the Blob or File API
-  const res = await uploadBytes(storageRef, file).then((snapshot) => {
+  const res = await uploadBytes(storageRef, file).then(() => {//snapshot
     console.log('Uploaded a blob or file!');
     return true;
   }, error => {
     console.error('onRejected function called: ' + error.message);
     return false;
   });
+  return res;
+  //Download
+  /* snapshot.ref.getDownloadURL().then(function(downloadURL) {
+    console.log("File available at", downloadURL);
+  }); */
+};
+export const fbGetAllProDocFiles = async (
+  userId: any
+) => {
+  const storage = getStorage();
+  const listRef = ref(storage, `Docs/${userId}`);
+
+  const res = await listAll(listRef)
+    .then((list) => {
+      //debugger
+      const proDocFiles: any = [];
+      const items = list.items;
+
+      const promises = items.map(async (item: any) => {
+        const getUrl =  await getDownloadURL(ref(storage, `${item["_location"]["path_"]}`))
+            .then((url) => {
+              const xhr = new XMLHttpRequest();
+              xhr.responseType = 'blob';
+              xhr.onload = (event) => {
+                const blob = xhr.response;
+              };
+              xhr.open('GET', url);
+              xhr.send();
+              console.log(url);
+              return url
+            })
+            .catch((error) => {
+              return error.message;
+            });
+            return getUrl;
+      })
+      const getAllProDocFiles= Promise.all(promises);
+      console.log(getAllProDocFiles);
+      return getAllProDocFiles;
+      //https://firebase.google.com/docs/storage/web/download-files
+      /* if(items){
+        for (const item of items) {
+          const getUrl =  getDownloadURL(ref(storage, `${item["_location"]["path_"]}`))
+            .then((url) => {
+              const xhr = new XMLHttpRequest();
+              xhr.responseType = 'blob';
+              xhr.onload = (event) => {
+                const blob = xhr.response;
+              };
+              xhr.open('GET', url);
+              xhr.send();
+              console.log(url);
+              proDocFiles.push(url);
+              if(items.length==)
+              return url
+            })
+            .catch((error) => {
+              return error.message;
+            });
+        }
+        return proDocFiles;
+        
+      } */
+      
+      
+      /* list.items.forEach(async (item: any) => {
+        debugger;
+        const getUrl = await getDownloadURL(ref(storage, `${item["_location"]["path_"]}`))
+          .then((url) => {
+            const xhr = new XMLHttpRequest();
+            xhr.responseType = 'blob';
+            xhr.onload = (event) => {
+              const blob = xhr.response;
+            };
+            xhr.open('GET', url);
+            xhr.send();
+            console.log(url);
+            return url
+          })
+          .catch((error) => {
+            return error.message;
+          });
+        proDocFiles.push(getUrl);
+        
+      }); */
+      
+    }).catch((error) => {
+      console.error('onRejected function called: ' + error.message);
+      return false;
+    });
+
   return res;
   //Download
   /* snapshot.ref.getDownloadURL().then(function(downloadURL) {
@@ -605,6 +729,7 @@ export const fbAdminSentMessage = async (message: string, user: string) => {
         },
         { merge: true }
       );
+      return true;
     }
     await updateDoc(chatRef, {
       chat: arrayUnion({

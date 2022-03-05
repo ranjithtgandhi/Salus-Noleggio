@@ -12,7 +12,7 @@
             </ion-tab-button>
 
             <ion-tab-button tab="approvalPageTab"  @click="selUserTab('Approval')"  data-title="approval" href="approvalPageTab">
-              <ion-label class="d-flex"
+              <ion-label class="d-flex ion-align-items-center"
                 >Approval &nbsp;<span class="redCircleApproval redCircle"> {{authStore.inActiveCompUsers?authStore.inActiveCompUsers.length:0}}</span></ion-label
               >
             </ion-tab-button>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import $ from "jquery";
+//import $ from "jquery";
 import { IonPage, IonContent, IonTabBar, IonTabButton, IonTabs } from "@ionic/vue";
 import ExploreContainer from "@/components/ExploreContainer.vue";
 import { chevronForwardOutline, calendar, personCircle } from "ionicons/icons";

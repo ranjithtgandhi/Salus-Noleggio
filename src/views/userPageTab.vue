@@ -106,6 +106,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loader:document.getElementById("loaderContainer"),
       search: "",
       userlist: [],
     };
@@ -118,9 +119,11 @@ export default defineComponent({
     },
   },
   async updated(){
+    this.loader.style.display='block';
     const authStore =  useAuthStore();
     await authStore.getAllActiveComUsers();
     this.userlist = authStore.activeCompUsers;
+    this.loader.style.display='none';
     console.log("This is the array data", this.userlist);
   },
   methods: {

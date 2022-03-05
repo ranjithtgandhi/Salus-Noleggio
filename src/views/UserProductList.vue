@@ -21,7 +21,7 @@
           />
           {{ search }}
         </div>
-
+        <span v-if="filteredList.length">
         <span v-for="(product, i) in filteredList" v-bind:key="product.id">
           <ion-row  class="ion-align-items-center ion-border-bottom py-5" :key="i">
             <ion-col size="9">
@@ -44,7 +44,16 @@
               <ion-icon class="delete" :icon="trashOutline"></ion-icon>
             </ion-col> -->
           </ion-row>
-        </span>
+        </span></span>
+        <div v-if="!filteredList.length">
+       <ion-row class="ion-align-items-center py-5">
+            <ion-col size="9">
+              <ion-card-title class="text-darkblue pb-5">
+              No Results Found!
+              </ion-card-title>
+            </ion-col>
+          </ion-row>
+       </div>
       </div>
       <!-- <div class="requstContainer ion-padding">
         <div class="deliveryContainer ion-padding-bottom ion-margin-bottom">
@@ -70,7 +79,7 @@ import {
   trashOutline,
   addCircleOutline,
 } from "ionicons/icons";
-//import { useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { defineComponent } from "vue"; //onUpdated
 import {
   fbGetUserProductList,
@@ -88,10 +97,12 @@ export default defineComponent({
   },
   data() {
     return {
+      loader:document.getElementById("loaderContainer"),
       userDetail: { items: [] },
       search: "",
       productList: { items: [] },
       userPreReqData:[],
+      router:useRouter()
     };
   },
   setup() {
@@ -125,7 +136,7 @@ export default defineComponent({
         this.userPreReqData &&
         this.userPreReqData.length &&
         this.productList &&
-        this.productList.items
+        this.productList.items && this.productList.items.length
       ) {
         difference = this.productList.items.filter((a) => {
           return !this.userPreReqData.some((b) => {
@@ -133,7 +144,7 @@ export default defineComponent({
           });
         });
       } else {
-        difference = this.productList.items;
+        difference = this.productList.items || [];
       }
 
       return difference.filter((item) => {
@@ -142,23 +153,28 @@ export default defineComponent({
     },
   },
   async beforeMount() {
-   
+    this.loader.style.display='block';
     this.userPreReqData = await getStore('userPreReqData') || [];
     this.productList = await fbGetUserProductList();
+    this.loader.style.display='none';
   },
   async beforeUpdate() {
-    
+    this.loader.style.display='block';
     this.userPreReqData = await getStore('userPreReqData') || [];
     this.productList = await fbGetUserProductList();
+    this.loader.style.display='none';
     console.log(this.productList);
   },
   methods: {
     async userAddProForNewReq(item) {
+      this.loader.style.display='block';
       this.userPreReqData = await getStore('userPreReqData') || [];
       console.log(this.userPreReqData)
       this.userPreReqData.push(item);
       setStore('userPreReqData',this.userPreReqData);
       toastAlert(`${item.name} Product successfully updated`);
+      this.router.push("/tabs/UserNewRequest"); 
+      this.loader.style.display='none';
       //setStore('userPreReqData',)
       /* const response = await fbUserAddProForNewReq(item);
       if (response) {

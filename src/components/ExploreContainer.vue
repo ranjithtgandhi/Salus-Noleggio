@@ -89,7 +89,7 @@ export default {
     height: 100px;
     display: flex;
     justify-content: center;
-    align-items: end;
+    align-items: flex-end;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
     padding: 20px 0;

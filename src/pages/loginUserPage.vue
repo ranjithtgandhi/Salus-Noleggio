@@ -23,6 +23,26 @@
                 </div>
               </div>
               <div class="custom-padding-vertical">
+<!--New code with hide&show password-->
+            <div class="dflex-border">
+              <ion-icon :icon="lockClosedOutline" class="commonStyleIcon"></ion-icon>
+              <!--<input v-if="showPassword" class="ion-padding-horizontal inputOverwrite" type="text" v-model="password">
+              <input v-else type="password" id="password" class="inputOverwrite" placeholder="Password" v-model="password" required>-->
+               <ion-input
+                    class="ion-padding-horizontal"
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    v-model="password"
+                    required
+                  ></ion-input>
+              <div @click="eyefunction">
+                <span class="icon">
+                  <i class="fas eyeIconHideShow" :class="{ 'fa-eye-slash': showPassword, 'fa-eye': !showPassword }"></i>
+                </span>
+              </div>
+            </div>
+<!--Backup code
                 <div class="dflex-border">
                   <ion-icon :icon="lockClosedOutline" class="commonStyleIcon"></ion-icon>
                   <ion-input
@@ -34,7 +54,7 @@
                     required
                   ></ion-input>
                   <ion-icon :icon="eyeOutline" class="commonStyleIcon"></ion-icon>
-                </div>
+                </div>-->
               </div>
               <ion-row class="choice">
                 <ion-col size-sm="6" class="remember">
@@ -95,16 +115,13 @@ export default defineComponent({
     const password = ref("");
     const doLogin = async () => {
        loader.style.display='block';
-      console.log(email.value);
-      console.log(password.value);
+      //console.log(email.value);
+      //console.log(password.value);
       const res = await logInUser(email.value, password.value, "user");
       if (res && !store.isAdmin) {
         router.push("/tabs/UserHome");
-         loader.style.display='none';
-        return false;
-      } else {
-        loader.style.display='none';
       }
+      loader.style.display='none';
     };
 
     return {
@@ -117,6 +134,10 @@ export default defineComponent({
       eyeOutline,
     };
   },
+  beforeUpdate() {
+   document.getElementById("email").value='';
+   document.getElementById("password").value='';
+  },
   methods: {
     async openToast() {
       const toast = await toastController.create({
@@ -126,6 +147,23 @@ export default defineComponent({
       });
       return toast.present();
     },
+    /*toggleShow() {
+      this.showPassword = !this.showPassword;
+    },*/
+    eyefunction() {
+      const x = document.getElementById("password");
+      this.showPassword = !this.showPassword;
+      if (x.type === "password") {
+        x.type = "text";
+      } else {
+        x.type = "password";
+      }
+    }
   },
+  data() {
+    return {
+      showPassword: false
+    };
+  }
 });
 </script>

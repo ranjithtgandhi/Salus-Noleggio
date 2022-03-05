@@ -64,7 +64,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script>
 /* import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
  import { homeOutline, documentTextSharp, addCircleSharp, logoWechat, settingsSharp } from 'ionicons/icons'; //User
  export default {
@@ -117,8 +117,8 @@ import {
   settingsSharp,
 } from "ionicons/icons";
 import { useAuthStore } from "@/store";
-import { useRouter } from "vue-router";
-import { defineComponent,onBeforeMount} from "vue";
+//import { useRouter } from "vue-router";
+import { defineComponent} from "vue";
 
 export default defineComponent({
   name: "Tabs",
@@ -132,8 +132,8 @@ export default defineComponent({
     IonRouterOutlet,
   },
   setup() {
-     const router = useRouter(); 
-    const {user,profile,isAdmin}= useAuthStore();
+    // const router = useRouter(); 
+    const {profile}= useAuthStore();
     
     onIonViewWillEnter(() => {
       console.log('Home page will enter');
@@ -201,10 +201,11 @@ ion-icon {
   --color: #000;
 }
 ion-card {
-  box-shadow: 0px 0px 2px 2px #eeeeee;
+  box-shadow: 0px 0px 2px 3px #eeeeee;
   background: #fff;
   padding: 12px 12px;
   margin: 18px 5px;
+  border-radius:12px;
 }
 .text-grey {
   color: var(--ion-color-medium);
@@ -258,8 +259,13 @@ ion-card {
 }
 .custom-border-top {
   border-top: 1px solid rgb(248 95 99 / 30%);
-  margin-top: 6px;
-  padding-top: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+.custom-border-bottom {
+  border-bottom: 1px solid rgb(248 95 99 / 30%);
+  margin-bottom: 10px;
+  padding-bottom: 10px;
 }
 .custom-border {
   border: 1px solid rgb(171 174 189 / 40%);

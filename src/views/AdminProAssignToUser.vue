@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content :fullscreen="true">
       <ExploreContainer name="New request page" />
-      <div class="title text-lightred ion-padding ion-text-center">
+      <div class="title text-lightred custom-ion-padding ion-text-center">
         Product Assign to Company
       </div>
       <div class="productAssignContainer ion-padding">
@@ -23,24 +23,23 @@
           {{ search }}
         </div>
        
-          <span v-for="(product,i) in filteredList" v-bind:key="product.id" >
-            <ion-row class="ion-align-items-center ion-border-bottom py-5" :key="i">
-              <ion-col size="9">
-                <ion-card-title class="text-darkblue pb-5"
+          <div v-for="(product,i) in filteredList" v-bind:key="product.id"  class="ion-border-bottom py-5">
+            <ion-row class="ion-align-items-center" :key="i">
+              <ion-col size="7">
+                <ion-card-title class="text-darkblue"
                   >{{ product.name }}
-                  <span class="aqty-field">  <input class="ion-padding-horizontal" :model="`quantity[${i}]`"
+                  </ion-card-title>                
+              </ion-col>
+              <ion-col size="3">
+              <span class="aqty-field">  <input class="ion-padding-horizontal" :model="`quantity[${i}]`"
                     :id="`quantity[${i}]`"
                     type="number" 
                     :name="`quantity[${i}]`"
                     placeholder="Qty"
                     :ref="`quantity[${i}]`"
-                    required /> </span></ion-card-title
-                >
-                <ion-card-subtitle class="text-lightgrey">{{
-                  product.description
-                }}</ion-card-subtitle>
+                    required /> </span>
               </ion-col>
-              <ion-col size="1.5" class="ion-text-center" @click="addItemToUser(userId,product,i)">
+              <ion-col size="2" class="ion-text-center" @click="addItemToUser(userId,product,i)">
                 <!-- @click="deleteItem(item.addedBy, item)" -->
                 <ion-icon class="active" :icon="addCircleOutline"></ion-icon>
               </ion-col>
@@ -48,9 +47,25 @@
               <ion-icon class="delete" :icon="trashOutline"></ion-icon>
             </ion-col> -->
             </ion-row>
-          </span>
-       
+            <ion-row>
+            <ion-col size="12">
+                <ion-card-subtitle class="text-lightgrey" style="padding:6px 0px">{{
+                      product.description
+                    }}</ion-card-subtitle>
+            </ion-col>
+            </ion-row>
+          </div>
+       <span v-if="filteredList.length === 0">
+          <ion-row class="ion-align-items-center ion-border-bottom py-5">
+            <ion-col size="9">
+              <ion-card-title class="text-darkblue pb-5">
+              No Results Found!
+              </ion-card-title>
+            </ion-col>
+          </ion-row>
+        </span>
       </div>
+      
        <div class="requstContainer ion-padding">
        <div class="deliveryContainer ion-padding-bottom ion-margin-bottom">
           <div class="ion-padding deliveryDate ion-text-center" @click="returnToCompany">
@@ -95,12 +110,14 @@ export default defineComponent({
   },
   data() {
     return {
+      loader : document.getElementById("loaderContainer"),
       userDetail: { items: [] },
       search: "",
       productList: { items: [] },
     };
   },
   setup() {
+    const loader = document.getElementById("loaderContainer");
     const route = useRoute();
     const userId = route.params.id;
     const router = useRouter();
@@ -120,15 +137,18 @@ export default defineComponent({
     }; */
 
     const doUserStatus = async (status) => {
+      loader.style.display='block';
       const updateStatus = !status;
       await store.setUserStatus(updateStatus, userId);
       if (updateStatus === false) {
         router.push("/tabs/AdminUser/userPageTab");
-      }
+      }loader.style.display='none';
     };
    
     const returnToCompany = ()=>{
+        loader.style.display='block';
          router.push("/AdminProduct/"+userId);
+        loader.style.display='none';
     }
     return {
       removeCircle,
@@ -160,42 +180,48 @@ export default defineComponent({
           });
         });
       } else {
-        difference = this.productList.items;
+        difference = this.productList.items || [];
       }
-
       return difference.filter((item) => {
-        return item.name.toLowerCase().includes(this.search.toLowerCase());
+          return item.name.toLowerCase().includes(this.search.toLowerCase());
       });
+      
     },
   },
   async beforeMount() {
+    this.loader.style.display='block';
      const route = useRoute();
     const userId = route.params.id;
     this.userId = userId;
     this.userDetail = await fbGetUserDetail(userId);
     this.productList = await fbGetProductList();
+       this.loader.style.display='none';
   },
   async beforeUpdate() {
+      this.loader.style.display='block';
      const route = useRoute();
     const userId = route.params.id;
     this.userId = userId;
     this.userDetail = await fbGetUserDetail(userId);
     this.productList = await fbGetProductList();
     console.log(this.productList);
+       this.loader.style.display='none';
   },
   methods: {
     async addItemToUser(uid,item,inx){  
+      this.loader.style.display='block';
         const val = Number(this.$refs['quantity['+inx+']'][0].value) || 0 
         //this.$refs['quantity['+inx+']'][0].value
         if(val===0){
-            toastAlert(`Please enter Quantity value`);
-            return false;
+          this.loader.style.display='none';
+          toastAlert(`Please enter Quantity value`);
+          return false;
         }
         const response = await fbAddItemToUser(uid, item,val);
         if (response) {
             toastAlert(`${item.name} Product successfully updated`);
         } else {
-            toastAlert(`${item.name} Product updated filed`);
+            toastAlert(`${item.name} Product updated failed`);
         }
         this.userDetail = await fbGetUserDetail(uid);
         const productList = await fbGetProductList();
@@ -210,6 +236,7 @@ export default defineComponent({
             difference = productList.items;
         }
         this.productList.items = difference;
+        this.loader.style.display='none';
             //console.log(this.refs);
     }
   },
