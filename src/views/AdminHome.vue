@@ -1,156 +1,102 @@
 <template>
-  <ion-page>
+  <ion-page><ExploreContainer name="Home page" />
     <ion-content :fullscreen="true" class="userHomePage">
-      <ExploreContainer name="Home page" />
-      <div class="outerPadding">
-        <ion-card :key="j">
-          <ion-row class="p-5">
-            <ion-col size="4" class="ion-text-center">
-              <ion-card-title class="text-green font-size">{{
-                totalOrders
-              }}</ion-card-title>
-              <div class="text-homedarkblue">Total Orders</div>
-            </ion-col>
-            <ion-col size="4" class="ion-text-center ion-border-left">
-              <ion-card-title class="text-yellow font-size">{{
-                totalOrders
-              }}</ion-card-title>
-              <div class="text-homedarkblue">Order pending</div>
-            </ion-col>
-            <ion-col size="4" class="ion-text-center ion-border-left">
-              <ion-card-title class="text-green font-size">0</ion-card-title>
-              <div class="text-homedarkblue">To deliver</div>
-            </ion-col>
-          </ion-row>
-        </ion-card>
-        <div v-if="userRequestItems.length">
-        <div v-for="request in userRequestItems" v-bind:key="request.id">
-          <ion-card v-for="(item,i) in request.items" v-bind:key="item.id">
-           <!-- <span>{{request.id}} </span> | <span>{{item.id}} </span> -->
-            <span v-for="(pro, j) in item.products" v-bind:key="pro.id">
-              <ion-row :key="j" class="custom-border-bottom">
-                <ion-col size="8.5">
-                  <ion-card-title class="text-lightred">{{ pro.name }}</ion-card-title>
-                  <ion-card-subtitle class="text-lightgrey"
-                    >{{ pro.description }}  </ion-card-subtitle
-                  >
-                </ion-col>
-                <ion-col size="2" offset="1.5" class="ion-text-center custom-border">
-                  <ion-card-title class="text-lightred">{{ pro.qty }}</ion-card-title>
-                  <ion-card-subtitle class="text-lightgrey">Qty </ion-card-subtitle>
-                </ion-col>
-              </ion-row>
-              </span>
-              <ion-row>
-                <ion-col size="12">
-                  <div class="text-homedarkblue">To: {{item.company}} </div>
-                </ion-col>
-              </ion-row>
-              <ion-row class="custom-border-top ion-align-items-center">
-                <ion-col size="5">
-                  <div class="requesttext-lightgrey">Request : {{ item.statusMessage }}</div>
-                </ion-col>
-                <ion-col size="3.5" class="ion-text-center" v-if="item.statusMessage=='pending'">
-                  <div class="redCustomBtn customPadding" @click="presentAlertConfirm('rejected',request.id,request.items,item.id,i)">
-                    Reject
-                  </div>
-                </ion-col>
-                <ion-col size="3.5" class="ion-text-center" v-if="item.statusMessage=='pending'">
-                  <div class="greenCustomBtn customPadding" @click="presentAlertConfirm('accepted',request.id,request.items,item.id,i)">Accept</div>
-                </ion-col>
-                <ion-col size="6" class="ion-text-center" v-if="item.statusMessage!='pending'">
-                    <div class="customDropdown">
-                      <ion-item>
-                      <ion-select placeholder="Select option" v-model="item.statusMessage"  name="requestStatus" interface="popover"   @ionChange="presentAlertConfirm($event.target.value,request.id,request.items,item.id,i)" >
-                    
-                      <ion-select-option  value="accepted">Accepted</ion-select-option>
-                        <ion-select-option  value="to work">To work</ion-select-option>
-                        <ion-select-option value="to delivered">To delivered</ion-select-option>
-                      </ion-select>
-                    </ion-item>
-                  </div>
-                </ion-col>
-              </ion-row>
-          </ion-card>
-        </div>
-        </div>
-        <div v-if="!userRequestItems.length">
-        <ion-row class="ion-align-items-center  py-5">
-            <ion-col size="12" class="ion-text-center">
-              <ion-card-title class="text-darkblue pb-5">
-              No Records Found!
-              </ion-card-title>
-            </ion-col>
-          </ion-row>
-        </div>
-
-       
+      
+      <ion-refresher slot="fixed" @ionRefresh="doRefresh($event)" pull-factor="10" pull-min="100" pull-max="200">
+      <ion-refresher-content
+        :pulling-icon="chevronDownCircleOutline"
+        pulling-text="Pull to refresh"
+        refreshing-spinner="circles"
+        refreshing-text="Refreshing...">
+      </ion-refresher-content>
+    </ion-refresher>
+          <div class="outerPadding">
         
-       <!--  <ion-card>
-          <ion-row>
-            <ion-col size="8.5">
-              <ion-card-title class="text-lightred">Metal rods</ion-card-title>
-
-              <ion-card-subtitle class="text-lightgrey"
-                >Metal rods of cast iron materials with..</ion-card-subtitle
-              >
-            </ion-col>
-            <ion-col size="2" offset="1.5" class="ion-text-center custom-border">
-              <ion-card-title class="text-lightred">400</ion-card-title>
-              <ion-card-subtitle class="text-lightgrey">Qty</ion-card-subtitle>
-            </ion-col>
-          </ion-row>
-          <ion-row class="custom-border-top">
-            <ion-col size="8.5">
-              <ion-card-title class="text-lightred">Bathrob</ion-card-title>
-
-              <ion-card-subtitle class="text-lightgrey"
-                >Bathrob of cast iron materials with..</ion-card-subtitle
-              >
-            </ion-col>
-            <ion-col size="2" offset="1.5" class="ion-text-center custom-border">
-              <ion-card-title class="text-lightred">40</ion-card-title>
-              <ion-card-subtitle class="text-lightgrey">Qty</ion-card-subtitle>
-            </ion-col>
-          </ion-row>
-          <ion-row class="custom-border-top">
-            <ion-col size="8.5">
-              <ion-card-title class="text-lightred">Metal rods</ion-card-title>
-
-              <ion-card-subtitle class="text-lightgrey"
-                >Metal rods of cast iron materials with..</ion-card-subtitle
-              >
-            </ion-col>
-            <ion-col size="2" offset="1.5" class="ion-text-center custom-border">
-              <ion-card-title class="text-lightred">10</ion-card-title>
-              <ion-card-subtitle class="text-lightgrey">Qty</ion-card-subtitle>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="12">
-              <div class="text-homedarkblue">To: Daniel Richardo</div>
-            </ion-col>
-          </ion-row>
-          <ion-row class="custom-border-top ion-align-items-center">
-            <ion-col size="6">
-              <div class="requesttext-lightgrey">Request</div>
-            </ion-col>
-            <ion-col size="6" class="ion-text-center">
-              <div class="customDropdown">
-                <ion-item>
-                  <ion-select placeholder="Select option" interface="popover">
-                    <ion-select-option value="accept">Accepted</ion-select-option>
-                    <ion-select-option value="towork">To work</ion-select-option>
-                    <ion-select-option value="todelivered"
-                      >To delivered</ion-select-option
-                    >
-                  </ion-select>
-                </ion-item>
-              </div>
-            </ion-col>
-          </ion-row>
-        </ion-card> -->
-      </div>
+            <ion-card :key="j">
+              <ion-row class="p-5">
+                <ion-col size="4" class="ion-text-center">
+                  <ion-card-title class="text-green font-size">{{
+                    totalOrders
+                  }}</ion-card-title>
+                  <div class="text-homedarkblue">Total Orders</div>
+                </ion-col>
+                <ion-col size="4" class="ion-text-center ion-border-left">
+                  <ion-card-title class="text-yellow font-size">{{
+                    totalOrders
+                  }}</ion-card-title>
+                  <div class="text-homedarkblue">Order pending</div>
+                </ion-col>
+                <ion-col size="4" class="ion-text-center ion-border-left">
+                  <ion-card-title class="text-green font-size">0</ion-card-title>
+                  <div class="text-homedarkblue">To deliver</div>
+                </ion-col>
+              </ion-row>
+            </ion-card>
+            <div v-if="userRequestItems.length">
+            <div v-for="request in userRequestItems" v-bind:key="request.id">
+              <ion-card v-for="(item,i) in request.items" v-bind:key="item.id">
+              <!-- <span>{{request.id}} </span> | <span>{{item.id}} </span> -->
+                <span v-for="(pro, j) in item.products" v-bind:key="pro.id">
+                  <ion-row :key="j" class="custom-border-bottom">
+                    <ion-col size="8.5">
+                      <ion-card-title class="text-lightred">{{ pro.name }}</ion-card-title>
+                      <ion-card-subtitle class="text-lightgrey"
+                        >{{ pro.description }}  </ion-card-subtitle
+                      >
+                    </ion-col>
+                    <ion-col size="2" offset="1.5" class="ion-text-center custom-border">
+                      <ion-card-title class="text-lightred">{{ pro.qty }}</ion-card-title>
+                      <ion-card-subtitle class="text-lightgrey">Qty </ion-card-subtitle>
+                    </ion-col>
+                  </ion-row>
+                  </span>
+                  <ion-row>
+                    <ion-col size="12">
+                      <div class="text-homedarkblue">To: {{item.company}} </div>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row class="custom-border-top ion-align-items-center">
+                    <ion-col size="5">
+                      <div class="requesttext-lightgrey">Request : {{ item.statusMessage }}</div>
+                    </ion-col>
+                    <ion-col size="3.5" class="ion-text-center" v-if="item.statusMessage=='pending'">
+                      <div class="redCustomBtn customPadding" @click="presentAlertConfirm('rejected',request.id,request.items,item.id,i)">
+                        Reject
+                      </div>
+                    </ion-col>
+                    <ion-col size="3.5" class="ion-text-center" v-if="item.statusMessage=='pending'">
+                      <div class="greenCustomBtn customPadding" @click="presentAlertConfirm('accepted',request.id,request.items,item.id,i)">Accept</div>
+                    </ion-col>
+                    <ion-col size="6" offset="1" class="ion-text-center" v-if="item.statusMessage!='pending'">
+                        <div class="customDropdown">
+                          <ion-item>
+                          <ion-select placeholder="Select option" v-model="item.statusMessage"  name="requestStatus" interface="popover"   @ionChange="presentAlertConfirm($event.target.value,request.id,request.items,item.id,i)" >
+                        
+                          <ion-select-option  value="accepted">Accepted</ion-select-option>
+                            <ion-select-option  value="to work">To work</ion-select-option>
+                            <ion-select-option value="to delivered">To delivered</ion-select-option>
+                          </ion-select>
+                        </ion-item>
+                      </div>
+                    </ion-col>
+                  </ion-row>
+              </ion-card>
+            </div>
+            </div>
+            <div v-if="!userRequestItems.length">
+            <ion-row class="ion-align-items-center  py-5">
+                <ion-col size="12" class="ion-text-center">
+                  <ion-card-title class="text-darkblue pb-5">
+                  No Records Found!
+                  </ion-card-title>
+                </ion-col>
+              </ion-row>
+            </div>
+            
+                    
+          
+          </div>
+        
     </ion-content>
   </ion-page>
 </template>
@@ -166,13 +112,14 @@ import {
   IonSelectOption,
   alertController,
   onIonViewWillEnter,
+ IonRefresher, IonRefresherContent
 } from "@ionic/vue";
 import { useAuthStore } from "@/store";
 import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import { toastAlert } from "../service/common";
 import ExploreContainer from "@/components/ExploreContainer.vue";
-
+import { chevronDownCircleOutline } from 'ionicons/icons'
 export default defineComponent({
   name: "AdminHome",
   components: {
@@ -183,6 +130,7 @@ export default defineComponent({
     IonItem,
     IonSelect,
     IonSelectOption,
+  //  IonRefresher, IonRefresherContent
   },
   data() {
     return {
@@ -201,8 +149,20 @@ export default defineComponent({
         router.replace("/tabs/UserHome");
       }
     });
+     const doRefresh = (event) => {
+        setTimeout(() => {
+          console.log('Async operation has ended');
+          event.target.complete();
+        }, 2000);
+     }
+    return { 
+    chevronDownCircleOutline,
+    IonRefresher,
+    IonRefresherContent,
+    doRefresh
+    }
   },
-  async beforeUpdate() { debugger
+  async beforeUpdate() { 
     const requests = await queryObjectCollection({ collectionName: "requests" });
     //this.userRequestData = await fbGetUserRequestedProducts(authStore.user.uid);
     if (requests) {
@@ -294,6 +254,7 @@ export default defineComponent({
       });
       return alert.present();
     },
+    
     /*  async onChangeOrderStatus(e){
       const selData = e.target.value;
       if(!selData){

@@ -58,10 +58,10 @@
         </div>
       </div>
 
-      <div class="requstContainer ion-padding" style="margin: 0 14px">
-        <div class="deliveryContainer ion-padding-bottom">
+      <div class="requstContainer ion-padding" style="margin: 0 14px" >
+        <div class="deliveryContainer ion-padding-bottom"   @click="viewUserOrders">
           <div class="ion-padding deliveryDate ion-text-center custom-d-flex">
-            Order &nbsp;<span class="yellowCircle">03</span>
+            Order &nbsp;<span class="yellowCircle">{{totalOrders}}</span>
           </div>
         </div>
         <div class="deliveryContainer ion-padding-bottom">
@@ -104,7 +104,7 @@
 
 <script>
 import ExploreContainer from "@/components/ExploreContainer.vue";
-
+import { fbGetUserRequestedProducts } from "../store/firebase";
 import { IonPage, IonContent, IonToggle } from "@ionic/vue";
 //import { onMounted } from "vue";
 import {
@@ -140,6 +140,8 @@ export default defineComponent({
       userDetail: { items: [],active:false },
       search: "",
       productList: { items: [] },
+      userRequestData:null,
+      totalOrders: 0,
     };
   },
   setup() {
@@ -191,6 +193,9 @@ export default defineComponent({
     const addNewDocs = async () => { 
       router.push("/AdminAddDocument/" + userId);
     };
+    const viewUserOrders = async () => {  
+      router.push("/UserOrders/" + userId);
+    };
 
     return {
       removeCircle,
@@ -205,7 +210,8 @@ export default defineComponent({
       fileUpload,
       doUserStatus,
       addProTouser,
-      addNewDocs
+      addNewDocs,
+      viewUserOrders
     };
   },
   computed: {
@@ -240,6 +246,12 @@ export default defineComponent({
     const userId = route.params.id;
     //  this.userId = userId;
     this.userDetail = await fbGetUserDetail(userId);
+     this.userRequestData = await fbGetUserRequestedProducts(userId);
+     if (this.userRequestData) {
+         const items = this.userRequestData.items;
+         this.totalOrders = items.length||0;
+       //console.log(this.userRequestData)
+     }
     this.loader.style.display='none';
     //this.productList = await fbGetProductList();
     //console.log(this.productList);

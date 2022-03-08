@@ -36,7 +36,7 @@ html.ios {
 }
 
 .outerPadding {
-    margin: 30px 21px;
+    margin: 10px 21px;
     height: calc(80% - 0px);
     overflow-y: auto;
 }
@@ -253,7 +253,11 @@ html.ios {
     font-size: 9px;
     font-family: 'Spartan-semibold';
 }
-
+.text-red {
+    color: #fc5a5f;
+    font-size: 9px;
+    font-family: 'Spartan-semibold';
+}
 ion-checkbox .checkbox-icon {
     border-radius: 0px !important;
 }
@@ -598,4 +602,7 @@ padding: 20px 16px;
 
 .inputOverwrite:focus-visible {
     outline: none
+}
+ion-refresher{
+    z-index: 1 !important;
 }

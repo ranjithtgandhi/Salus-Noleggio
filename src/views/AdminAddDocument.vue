@@ -4,8 +4,9 @@
    <ion-content :fullscreen="true">     
       <ExploreContainer name="Document page" />
 
-      <div class="outerPadding">
-       <div class="deliveryContainer ion-padding-bottom">
+      <div class="outerPadding" style="margin:10px 21px;">
+<div class="title text-lightred custom-ion-padding ion-text-center">Company</div>
+       <!--<div class="deliveryContainer ion-padding-bottom">
           <div class="ion-padding deliveryDate ion-text-center custom-d-flex">
             <ion-icon :icon="documentTextSharp"></ion-icon>&nbsp;<input
               type="file"
@@ -13,6 +14,17 @@
               name="filename"
               @change="fileUpload($event)"
             /> 
+          </div>
+        </div>-->
+
+        <div class="deliveryContainer ion-padding-bottom">
+          <div class="ion-padding deliveryDate ion-text-center custom-d-flex">
+            <ion-icon :icon="documentTextSharp"></ion-icon>&nbsp;<!-- <input
+              type="file"
+              id="docFile"
+              name="filename"
+              @change="fileUpload($event)"
+            /> -->Attachment
           </div>
         </div>
       <ion-card>
@@ -24,12 +36,12 @@
             >
           </ion-col>
         </ion-row>
-        <ion-row class="custom-border-top">
+        <ion-row class="custom-border-top ion-align-items-center">
           <ion-col size="7">
             <div class="text-subdarkblue font-weight">Created on: 14 Oct 2021</div>
           </ion-col>
-          <ion-col size="5" class="ion-text-center">
-            <div class="text-blue">Download Attachment</div>|<div class="text-red">Delete</div>
+          <ion-col size="5" class="ion-text-center ion-align-items-center">
+            <span class="text-blue">Download</span> <span class="splitup"> &#124;</span> <span class="text-red">Delete</span>
           </ion-col>
         </ion-row>
       </ion-card>
@@ -42,12 +54,12 @@
             >
           </ion-col>
         </ion-row>
-        <ion-row class="custom-border-top">
+       <ion-row class="custom-border-top ion-align-items-center">
           <ion-col size="7">
             <div class="text-subdarkblue font-weight">Created on: 14 Oct 2021</div>
           </ion-col>
-          <ion-col size="5" class="ion-text-center">
-            <div class="text-blue">Download Attachment</div>
+          <ion-col size="5" class="ion-text-center ion-align-items-center">
+            <span class="text-blue">Download</span> <span class="splitup"> &#124;</span> <span class="text-red">Delete</span>
           </ion-col>
         </ion-row>
       </ion-card>
@@ -60,12 +72,12 @@
             >
           </ion-col>
         </ion-row>
-        <ion-row class="custom-border-top">
+        <ion-row class="custom-border-top ion-align-items-center">
           <ion-col size="7">
             <div class="text-subdarkblue font-weight">Created on: 14 Oct 2021</div>
           </ion-col>
-          <ion-col size="5" class="ion-text-center">
-            <div class="text-blue">Download Attachment</div>
+          <ion-col size="5" class="ion-text-center ion-align-items-center">
+            <span class="text-blue">Download</span> <span class="splitup"> &#124;</span> <span class="text-red">Delete</span>
           </ion-col>
         </ion-row>
       </ion-card>
@@ -78,12 +90,12 @@
             >
           </ion-col>
         </ion-row>
-        <ion-row class="custom-border-top">
+        <ion-row class="custom-border-top ion-align-items-center">
           <ion-col size="7">
             <div class="text-subdarkblue font-weight">Created on: 14 Oct 2021</div>
           </ion-col>
-          <ion-col size="5" class="ion-text-center">
-            <div class="text-blue">Download Attachment</div>
+          <ion-col size="5" class="ion-text-center ion-align-items-center">
+            <span class="text-blue">Download</span> <span class="splitup"> &#124;</span> <span class="text-red">Delete</span>
           </ion-col>
         </ion-row>
       </ion-card>
@@ -102,7 +114,7 @@ import {
 import { toastAlert } from "../service/common";
 import { IonPage, IonContent } from "@ionic/vue";
 import ExploreContainer from "@/components/ExploreContainer.vue";
-import { chevronForwardOutline } from "ionicons/icons";
+import { chevronForwardOutline, documentTextSharp } from "ionicons/icons";
 export default {
   name: "AdminAddDocument",
   components: { ExploreContainer, IonContent, IonPage },
@@ -117,6 +129,7 @@ export default {
   setup() {
     return {
       chevronForwardOutline,
+      documentTextSharp
     };
   },
    async beforeMount() {
@@ -157,5 +170,8 @@ export default {
 .font-weight {
   font-weight: 700;
 }
-
+.splitup{
+  position:relative;
+  top:1px;
+}
 </style>

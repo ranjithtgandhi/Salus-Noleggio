@@ -127,6 +127,12 @@ const routes: Array<RouteRecordRaw> = [
         beforeEnter: authCheck,
       }, 
       {
+        name: "UserOrders",
+        path: '/UserOrders/:id',
+        component: () => import('@/views/UserOrders.vue'),
+        beforeEnter: authCheck,
+      }, 
+      {
         path: 'AdminUser',
         component: () => import('@/views/AdminUser.vue'),
         beforeEnter: authCheck,

@@ -1,5 +1,5 @@
 <template>
-  <div id="container">
+<div id="container">
     <div class="brand-section">
       <div class="logo">
         <svg xmlns="http://www.w3.org/2000/svg" width="100.087" height="30.626" viewBox="0 0 100.087 30.626">
@@ -71,6 +71,8 @@
 </div>
     </div>
   </div>
+
+  
 </template>
 
 <script lang="ts">
